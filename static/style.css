@@ -1,0 +1,38 @@
+
+.no-drag{
+  -ms-user-select:none;
+  -moz-user-select:-mozs-none;
+  -webkit-user-selcet:none;
+  -khtml-user-select:none;
+  user-select:none;
+  font-family: '함초롬돋움';
+}
+
+.sub_div{
+  position: absolute;
+  z-index:3;
+  left:45%;
+}
+
+td{
+  border:1px solid;
+}
+
+.dicetable{
+  width:550px;
+  text-align:center;
+}
+.gametable{
+  margin:0 0 0 15px;
+  font-size:18px;
+  border:2px solid;
+  text-align:center;
+}
+
+#d1, #d2, #d3, #d4, #d0{
+  height:80px;
+  width:74px;
+  font-size:30px;
+  border-radius:25px;
+  border:2px solid;
+}
