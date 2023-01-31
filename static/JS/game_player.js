@@ -103,13 +103,41 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
     document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')';
   }
 
+  function preview_homework(dice_value, user_number, func_num){
+    let total = 0;
+    //이건 1~6값 총 합을 보여주는게 베스트인데 이러면 주사위값 수신과 점수판 수신을 합치는게 나을지도 모르겠음 근데 dice_clear가 걸리네 고민이 더 필요함
+    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')';
+  }
+
+  function preview_triple(dice_value, user_number, func_num){
+    let total = 0;
+    var temp = [...dice_value];
+    temp.sort((a,b) => a-b);
+    for(var i=1; i<4; i++){
+      if(temp[i]===temp[i-1] && temp[i]===temp[i+1]){
+        total = temp.reduce((a, b) => (a + b));//배열의 합계 리턴
+        break;
+      }
+    }
+    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')'
+  }
+
+
+  function preview_(dice_value, user_number, func_num){
+    
+  }
+  
+
   function preview_score(dice_value, user_number){
-    aaa(dice_value, user_number, 0);
-    aaa(dice_value, user_number, 1);
-    aaa(dice_value, user_number, 2);
-    aaa(dice_value, user_number, 3);
-    aaa(dice_value, user_number, 4);
-    aaa(dice_value, user_number, 5);
+    preview_num(dice_value, user_number, 0);
+    preview_num(dice_value, user_number, 1);
+    preview_num(dice_value, user_number, 2);
+    preview_num(dice_value, user_number, 3);
+    preview_num(dice_value, user_number, 4);
+    preview_num(dice_value, user_number, 5);
+  //function preview_homework();
+    preview_triple(dice_value, user_number, 7);
+    
   }
 
 
