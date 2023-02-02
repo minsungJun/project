@@ -38,12 +38,12 @@ chatSocket.onmessage = (e) => {
         let dice_value = data['type'];
         let roll_cnt = data['roll_cnt'];
         let user_number = data['user_number'];
-        //let used_score = data['used_score'];
-        console.log(used_score);
+        let used_score = data['used_score'];
+        //console.log(used_score);
         for(let i=0; i<5; i++){
             document.getElementById('d'+String(i)).textContent = dice_value[i];
         }
-        //preview_score(dice_value, user_number, used_score);
+        preview_score(dice_value, user_number, used_score);
         document.getElementById('test-submit').textContent = 'Re Roll (' + roll_cnt + '/ 3)';
     }
 

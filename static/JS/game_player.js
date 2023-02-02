@@ -96,6 +96,7 @@ function dice_clear(){
   
 
   function preview_num(dice_value, user_number, used_score, func_num){
+    //if(used_score[func_num]==True)return;
     let total = 0;
     for(var i=0; i<5; i++){
       if(dice_value[i] == func_num + 1) total += dice_value[i];
@@ -103,13 +104,13 @@ function dice_clear(){
     document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')';
   }
 
-  function preview_homework(dice_value, user_number, used_score, func_num){
+  function preview_homework(dice_value, user_number, func_num){
     let total = 0;
     //이건 1~6값 총 합을 보여주는게 베스트인데 이러면 주사위값 수신과 점수판 수신을 합치는게 나을지도 모르겠음 근데 dice_clear가 걸리네 고민이 더 필요함
-    document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')';
+    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')';
   }
 
-  function preview_triple(dice_value, user_number, used_score, func_num){
+  function preview_triple(dice_value, user_number, func_num){
     let total = 0;
     var temp = [...dice_value];
     temp.sort((a,b) => a-b);
@@ -119,14 +120,14 @@ function dice_clear(){
         break;
       }
     }
-    document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')'
+    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')'
   }
 
 
-  function preview_(dice_value, user_number, used_score, func_num){
+  function preview_(dice_value, user_number, func_num){
     
   }
-  
+
 
   function preview_score(dice_value, user_number, used_score){
     preview_num(dice_value, user_number, used_score, 0);
@@ -137,7 +138,6 @@ function dice_clear(){
     preview_num(dice_value, user_number, used_score, 5);
   //function preview_homework();
     preview_triple(dice_value, user_number, 7);
-    
   }
 
 
