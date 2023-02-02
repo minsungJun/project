@@ -2,12 +2,12 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   chatSocket.send(JSON.stringify({
       'send_type' : 'dice_roll',
       'lock_data' : lock,
-      'user_name' : userName,
+      'user_name': userName,
       'room_name' : roomName,
   }));
 });
 
-  function dice_clear(){
+function dice_clear(){
     lock = [false, false, false, false, false];
     for(let i=0; i<5; i++){
         document.getElementById('d'+String(i)).textContent = 'D'+String(i+1);
@@ -19,8 +19,8 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function number(num){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_number',
-        'dice_num'  : num,
-        'user_name' : userName,
+        'dice_num' : num,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -29,7 +29,7 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function triple(){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_triple',
-        'user_name' : userName,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -38,7 +38,7 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function fourcard(){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_fourcard',
-        'user_name' : userName,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -47,7 +47,7 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function fullhouse(){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_fullhouse',
-        'user_name' : userName,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -56,7 +56,7 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function Sstraight(){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_Sstraight',
-        'user_name' : userName,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -65,7 +65,7 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function Lstraight(){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_Lstraight',
-        'user_name' : userName,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -74,7 +74,7 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function yachu(){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_yachu',
-        'user_name' : userName,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -83,7 +83,7 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function choice(){
     chatSocket.send(JSON.stringify({
         'send_type' : 'game_choice',
-        'user_name' : userName,
+        'user_name': userName,
         'room_name' : roomName,
     }));
     dice_clear();
@@ -139,7 +139,6 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
     preview_triple(dice_value, user_number, 7);
     
   }
-
 
 
   function color(i){

@@ -1,4 +1,3 @@
-const { calculateMac } = require("request/lib/hawk");
 
 chatSocket.onopen = () => { //웹 소켓 생성 완료시 실
     chatSocket.send(JSON.stringify({
