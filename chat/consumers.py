@@ -52,8 +52,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 else:
                     print("error")
 
-            # print('in coming!')
-            print(room)
+            # 방 목록 콘솔에 표시
+            # print(room) 
 
         # -----------------------채팅 내용 수신---------------------------
         elif text_data_json['send_type'] == 'message':

@@ -6,7 +6,8 @@ class System:
     def __init__(self):
         self.dice = [-1, -1, -1, -1, -1]
         self.dice_lock = [False, False, False, False, False]
-        self.score_table = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.score_table = [0, 0, 0, 0, 0,  0, 0, 0, 0, 0,  0, 0, 0, 0, 0]
+        self.used_score = [False, False, False, False, False,  False, True, False, False, False,  False, False, False, False, True]
         self.roll_cnt = 0
         self.yachu_cnt = 0
 
@@ -43,6 +44,7 @@ class System:
             if self.dice[i] == num:
                 total += num
         self.score_table[num - 1] = total
+        self.used_score[num - 1] = True
         self.homework()
         self.check_overlap_yachu()
         self.end_turn()
@@ -63,6 +65,7 @@ class System:
         if temp[0] == temp[2] or temp[1] == temp[3] or temp[2] == temp[4]:
             total = sum(self.dice)
         self.score_table[7] = total
+        self.used_score[7] = True
         self.check_overlap_yachu()
         self.end_turn()
 
@@ -73,6 +76,7 @@ class System:
         if temp[0] == temp[3] or temp[1] == temp[4]:
             total = sum(self.dice)
         self.score_table[8] = total
+        self.used_score[8] = True
         self.check_overlap_yachu()
         self.end_turn()
 
@@ -83,6 +87,7 @@ class System:
         if ((temp[0] == temp[2]) and (temp[3] == temp[4])) or ((temp[2] == temp[4]) and (temp[0] == temp[1])):
             total = sum(self.dice)
         self.score_table[9] = total
+        self.used_score[9] = True
         self.check_overlap_yachu()
         self.end_turn()
 
@@ -94,6 +99,7 @@ class System:
                 5 in temp and 6 in temp and 3 in temp and 4 in temp):
             total = 15
         self.score_table[10] = total
+        self.used_score[10] = True
         self.check_overlap_yachu()
         self.end_turn()
 
@@ -104,6 +110,7 @@ class System:
                 2 in temp and 3 in temp and 4 in temp and 5 in temp and 6 in temp):
             total = 30
         self.score_table[11] = total
+        self.used_score[11] = True
         self.check_overlap_yachu()
         self.end_turn()
 
@@ -114,6 +121,7 @@ class System:
             total = 50
             self.yachu_cnt += 1
         self.score_table[12] += total
+        self.used_score[12] = True
         self.end_turn()
 
     def choice(self):
@@ -122,6 +130,7 @@ class System:
         for i in range(5):
             total += temp[i]
         self.score_table[13] = total
+        self.used_score[13] = True
         self.check_overlap_yachu()
         self.end_turn()
 

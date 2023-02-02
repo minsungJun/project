@@ -10,10 +10,10 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   function dice_clear(){
     lock = [false, false, false, false, false];
     for(let i=0; i<5; i++){
-        document.getElementById('d'+String(i)).innerHTML = 'D'+String(i+1);
+        document.getElementById('d'+String(i)).textContent = 'D'+String(i+1);
         document.getElementById('d'+String(i)).style.background = 'rgb(255,255,255)';
     }
-    document.getElementById('test-submit').innerHTML = 'START';
+    document.getElementById('test-submit').textContent = 'START';
   }
 
   function number(num){
@@ -95,21 +95,21 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   //
   
 
-  function preview_num(dice_value, user_number, func_num){
+  function preview_num(dice_value, user_number, used_score, func_num){
     let total = 0;
     for(var i=0; i<5; i++){
       if(dice_value[i] == func_num + 1) total += dice_value[i];
     }
-    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')';
+    document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')';
   }
 
-  function preview_homework(dice_value, user_number, func_num){
+  function preview_homework(dice_value, user_number, used_score, func_num){
     let total = 0;
     //이건 1~6값 총 합을 보여주는게 베스트인데 이러면 주사위값 수신과 점수판 수신을 합치는게 나을지도 모르겠음 근데 dice_clear가 걸리네 고민이 더 필요함
-    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')';
+    document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')';
   }
 
-  function preview_triple(dice_value, user_number, func_num){
+  function preview_triple(dice_value, user_number, used_score, func_num){
     let total = 0;
     var temp = [...dice_value];
     temp.sort((a,b) => a-b);
@@ -119,22 +119,22 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
         break;
       }
     }
-    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')'
+    document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')'
   }
 
 
-  function preview_(dice_value, user_number, func_num){
+  function preview_(dice_value, user_number, used_score, func_num){
     
   }
   
 
-  function preview_score(dice_value, user_number){
-    preview_num(dice_value, user_number, 0);
-    preview_num(dice_value, user_number, 1);
-    preview_num(dice_value, user_number, 2);
-    preview_num(dice_value, user_number, 3);
-    preview_num(dice_value, user_number, 4);
-    preview_num(dice_value, user_number, 5);
+  function preview_score(dice_value, user_number, used_score){
+    preview_num(dice_value, user_number, used_score, 0);
+    preview_num(dice_value, user_number, used_score, 1);
+    preview_num(dice_value, user_number, used_score, 2);
+    preview_num(dice_value, user_number, used_score, 3);
+    preview_num(dice_value, user_number, used_score, 4);
+    preview_num(dice_value, user_number, used_score, 5);
   //function preview_homework();
     preview_triple(dice_value, user_number, 7);
     
