@@ -23,7 +23,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
 
   function triple(){
@@ -32,7 +31,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
 
   function fourcard(){
@@ -41,7 +39,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
 
   function fullhouse(){
@@ -50,7 +47,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
 
   function Sstraight(){
@@ -59,7 +55,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
 
   function Lstraight(){
@@ -68,7 +63,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
 
   function yachu(){
@@ -77,7 +71,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
 
   function choice(){
@@ -86,7 +79,6 @@ function dice_clear(){
         'user_name': userName,
         'room_name' : roomName,
     }));
-    dice_clear();
   }
   //받아올 값 : 주사위 값, 유저 번호, 기능이름? 몇번째 기능인지? 이건 하드코딩해도 되려나
   //JS에서 먼저 주사위 값을 계산해서 띄워놓을 예정
@@ -96,12 +88,13 @@ function dice_clear(){
   
 
   function preview_num(dice_value, user_number, used_score, func_num){
-    //if(used_score[func_num]==True)return;
-    let total = 0;
-    for(var i=0; i<5; i++){
-      if(dice_value[i] == func_num + 1) total += dice_value[i];
+    if(used_score[func_num]==false){
+      let total = 0;
+      for(var i=0; i<5; i++){
+        if(dice_value[i] == func_num + 1) total += dice_value[i];
+      }
+      document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')';
     }
-    document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')';
   }
 
   function preview_homework(dice_value, user_number, func_num){
@@ -110,21 +103,23 @@ function dice_clear(){
     document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')';
   }
 
-  function preview_triple(dice_value, user_number, func_num){
-    let total = 0;
-    var temp = [...dice_value];
-    temp.sort((a,b) => a-b);
-    for(var i=1; i<4; i++){
-      if(temp[i]===temp[i-1] && temp[i]===temp[i+1]){
-        total = temp.reduce((a, b) => (a + b));//배열의 합계 리턴
-        break;
+  function preview_triple(dice_value, user_number, used_score, func_num){
+    if(used_score[func_num]==false){
+      let total = 0;
+      var temp = [...dice_value];
+      temp.sort((a,b) => a-b);
+      for(var i=1; i<4; i++){
+        if(temp[i]===temp[i-1] && temp[i]===temp[i+1]){
+          total = temp.reduce((a, b) => (a + b));//배열의 합계 리턴
+          break;
       }
+      }
+      document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')'
     }
-    document.getElementById('p'+String(user_number)+String(func_num)).innerHTML = '(+' + total + ')'
   }
 
 
-  function preview_(dice_value, user_number, func_num){
+  function preview_(dice_value, user_number, used_score, func_num){
     
   }
 
@@ -137,7 +132,7 @@ function dice_clear(){
     preview_num(dice_value, user_number, used_score, 4);
     preview_num(dice_value, user_number, used_score, 5);
   //function preview_homework();
-    preview_triple(dice_value, user_number, 7);
+    preview_triple(dice_value, user_number, used_score, 7);
   }
 
 

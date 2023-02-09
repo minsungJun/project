@@ -98,51 +98,56 @@ class ChatConsumer(AsyncWebsocketConsumer):
             get_room_user = room.get(room_name)
 
             if get_room_user['room_turn'] % 2 == get_room_user[user_name]:
+
+                unused = False
+
                 if text_data_json['send_type'] == 'game_number':
                     num = text_data_json['dice_num']
-                    self.sys.number(num)
+                    unused = self.sys.number(num)
+
                 elif text_data_json['send_type'] == 'game_triple':
-                    self.sys.triple()
+                    unused = self.sys.triple()
 
                 elif text_data_json['send_type'] == 'game_fourcard':
-                    self.sys.fourcard()
+                    unused = self.sys.fourcard()
 
                 elif text_data_json['send_type'] == 'game_fullhouse':
-                    self.sys.fullhouse()
+                    unused = self.sys.fullhouse()
 
                 elif text_data_json['send_type'] == 'game_Sstraight':
-                    self.sys.Sstraight()
+                    unused = self.sys.Sstraight()
 
                 elif text_data_json['send_type'] == 'game_Lstraight':
-                    self.sys.Lstraight()
+                    unused = self.sys.Lstraight()
 
                 elif text_data_json['send_type'] == 'game_yachu':
-                    self.sys.yachu()
+                    unused = self.sys.yachu()
 
                 elif text_data_json['send_type'] == 'game_choice':
-                    self.sys.choice()
+                    unused = self.sys.choice()
 
-                print('점수 테이블 : ')
-                print(self.sys.score_table)
+                if unused == True:
+                    print('점수 테이블 : ')
+                    print(self.sys.score_table)
 
-                if user_name in get_room_user:
-                    room_user_number = get_room_user.get(user_name)
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'score_table',
-                            'score': self.sys.score_table,
-                            'user_number': room_user_number + 1,
-                        }
-                    )
-                    get_room_user['room_turn'] += 1
-                    print(get_room_user)
-                #else: 에러처리
+                    if user_name in get_room_user:
+                        room_user_number = get_room_user.get(user_name)
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                'type': 'score_table',
+                                'score': self.sys.score_table,
+                                'user_number': room_user_number + 1,
+                            }
+                        )
+                        get_room_user['room_turn'] += 1
+                        print(get_room_user)
+                    #else: 에러처리
 
 
 
     # -----------------HTML로 데이터 전달-----------------------
-    # ------------------채팅 메시지 전달-------------------------
+    # ------------------채팅 메시지 전달------------------------
     # "room" 그룹에서 메시지 수신
     async def chat_message(self, event):
         message = event['message']
