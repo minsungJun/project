@@ -34,7 +34,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print('웹소켓에서 받은 JSON 형식 : ')
         print(text_data_json)
 
-        # -----------------------유저가 방에 입장---------------------------
+        # -----------------------유저가 방에 입장---------------------------#나중에 합친 후 변경해야 함
         if text_data_json['send_type'] == 'enter':
             userName = text_data_json['user_name']
             roomName = text_data_json['room_name']
@@ -74,8 +74,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # 주사위 굴리기
             room_name = text_data_json['room_name']
             user_name = text_data_json['user_name']
-            get_room_user = room.get(room_name)
-            room_user_number = get_room_user.get(user_name)
+            get_room_user = room.get(room_name)#나중에 합친 후 변경해야 함
+            room_user_number = get_room_user.get(user_name)#나중에 합친 후 변경해야 함
 
             if get_room_user['room_turn'] % 2 == get_room_user[user_name]:
                 self.sys.dice_lock = text_data_json['lock_data']
@@ -95,7 +95,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # 족보 판별
             room_name = text_data_json['room_name']
             user_name = text_data_json['user_name']
-            get_room_user = room.get(room_name)
+            get_room_user = room.get(room_name)#나중에 합친 후 변경해야 함
 
             if get_room_user['room_turn'] % 2 == get_room_user[user_name]:
 
