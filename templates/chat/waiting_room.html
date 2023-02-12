@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
     
+    <a href="#" class="btn btn-primary" data-uri="{% url 'chat:game_start' room_name %}" id="start">게임시작</a>
     <button type="button" class="btn btn-primary">게임시작</button>
-    <button type="button" class="btn btn-primary">준비</button>
-    <button type="submit" class="btn btn-primary" id="exit3">나가기</button><br><!--나가기 버튼이 눌리면 메인화면으로 연결
-    웹소켓연결은 페이지를 나갈시 자동으로 연결이 끊김?-->
-    <a href="#" class="delete btn btn-sm btn-outline-secondary" data-uri="{% url 'chat:exit_room' room_name %}" id="exit">퇴장</a>
+    {% if game}
+    <a href="#" class="btn btn-primary" data-url="{% url 'chat:game_ready' room_name %}" id="ready">준비</a>
+    <a href="#" class="delete btn btn-primary" data-uri="{% url 'chat:exit_room' room_name %}" id="exit">퇴장</a>
     <form action="{% url 'chat:waiting_room' room_name %}" method="post" >
         {% csrf_token %}
         <button type="submit" class="btn btn-primary" id="room_exit" name="exit2">나가기</button>
@@ -191,6 +191,13 @@ $(document).ready(function() {
     $(".delete").on('click', function() {
         if(confirm("정말 퇴장하시겠습니까?")) {
             location.href = $(this).data('uri');
+        }
+    });
+});
+$(document).ready(function() {
+    $("#ready").on('click', function() {
+        if(confirm("준비완료?")) {
+            location.href = $(this).data('url');
         }
     });
 });
