@@ -1,0 +1,33 @@
+<!-- chat/templates/chat/index.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h5 class="my-3 border-bottom pb-2">방 만들기</h5>
+    <form action="{% url 'chat:make_room' %}" method="post" class="post-form my-3">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+            {% for field in form %}
+                {% if field.errors %}
+                <strong>{{ field.label }}</strong>
+                {{ field.errors }}
+                {% endif %}
+            {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label for="room_name">방제</label>
+            <input type="text" class="form-control" name="room_name" id="room_name"
+                   value="{{ form.room_name.value|default_if_none:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="room_url">방 주소</label>
+            <input type="text" class="form-control" name="room_url" id="room_url"
+                   value="{{ form.room_url.value|default_if_none:'' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">생성</button>
+    </form>
+</div>
+{% endblock %}
