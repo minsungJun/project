@@ -3,11 +3,12 @@
     
     <button type="button" class="btn btn-primary">게임시작</button>
     <button type="button" class="btn btn-primary">준비</button>
-    <button type="submit" class="btn btn-primary">나가기</button><br><!--나가기 버튼이 눌리면 메인화면으로 연결
+    <button type="submit" class="btn btn-primary" id="exit3">나가기</button><br><!--나가기 버튼이 눌리면 메인화면으로 연결
     웹소켓연결은 페이지를 나갈시 자동으로 연결이 끊김?-->
-    <form action="{% url 'chat:waiting_room' room_name %}" method="post" name="나가기">
+    <a href="#" class="delete btn btn-sm btn-outline-secondary" data-uri="{% url 'chat:exit_room' room_name %}" id="exit">퇴장</a>
+    <form action="{% url 'chat:waiting_room' room_name %}" method="post" >
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary" id="room_exit">나가기</button>
+        <button type="submit" class="btn btn-primary" id="room_exit" name="exit2">나가기</button>
     </form>
 
     <textarea id="chat-log" cols="100" rows="20"></textarea><br />
@@ -24,14 +25,66 @@
         //document.querySelector('#room_exit').click();
         //window.addEventListener('unload',e=>{document.querySelector('#room_exit').click();} );
         //window.onbeforeunload = (e) => {alert('asdf');};
-        window.onbeforeunload = function() {
-            fetch('{% url chat:waiting_room roomName %}', {
+        /*window.onbeforeunload = function() {
+            fetch('logger/', {
                 method: 'POST',
                 body: new URLSearchParams({agent: 'agent-info', logdata: 'data'}),
                 keepalive: true
             });
-        };
+        };*/
+        /*window.addEventListener('beforeunload', call_unload);
 
+        function call_unload() {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'chat:waiting_room' room_name %}",
+                success : function(result) { // 결과 성공 콜백함수
+                    console.log(result);
+                },
+                //async: false
+            });
+        }*/
+        
+        //let analyticsData = { /* 분석 정보가 담긴 객체 */ };
+        /*window.addEventListener("unload", function(e) {
+            var data = new FormData(); 
+            data.append('csrfmiddlewaretoken', '{{csrf_token}}');
+            data.append('exit','true'); 
+            navigator.sendBeacon('.', data);
+            //navigator.sendBeacon("/analytics", JSON.stringify(analyticsData));
+            document.querySelector("#exit").click();
+        });*/
+        /*
+        window.addEventListener('unload', (event) => {
+            // 명세에 따라 preventDefault는 호출해야하며, 기본 동작을 방지합니다.
+            event.preventDefault();
+
+            // 대표적으로 Chrome에서는 returnValue 설정이 필요합니다.
+            //event.returnValue = '왜안되니 친구야';
+            return '왜안되니 친구야';
+        });*/
+        /*
+        window.addEventListener('beforeunload', (event) => {
+            
+            event.preventDefault();
+            event.returnValue = '';
+        });*/
+        /*
+        if(window.reload==ture){
+            consloe.log('asdfla;siej');
+        }*/
+        /*
+        window.addEventListener('blur', (event)=>{
+            var data = new FormData(); 
+            data.append('csrfmiddlewaretoken', '{{csrf_token}}');
+            navigator.sendBeacon(".", 'true');
+        });
+        */
+        window.addEventListener('beforeunload',  function(e) {
+            
+            
+            document.querySelector('#exit')
+        });
         
         
         //let today = new Date();   
@@ -80,10 +133,8 @@
         };
 
         chatSocket.onclose = (e) => {
-            document.querySelector('#room_exit').click();
-            //console.error('Chat socket closed unexpectedly');
-
-            
+            //document.querySelector('#room_exit').click();
+            console.error('Chat socket closed unexpectedly');            
         };
 
         document.querySelector("#chat-message-input").focus();
@@ -133,4 +184,15 @@
         });*/
         
     </script>
-    {% endblock %}
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $(".delete").on('click', function() {
+        if(confirm("정말 퇴장하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
+});
+</script>
+{% endblock %}

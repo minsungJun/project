@@ -83,10 +83,12 @@ def room(request, room_name):
 
 #대기실 입장
 def waiting_room(request, room_name):
+    '''대기실 입장 가능여부 확인 및 처리'''
     #로그인 여부 확인
     if request.user.is_authenticated == False:
         return redirect('common:login')
-    
+    '''#print(request.POST.get())
+    #print(request.GET.get())
     game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
     player = User.objects.get(username= request.user.username) #입장하는 유저의db
 
@@ -94,54 +96,81 @@ def waiting_room(request, room_name):
 
     #입력방식이 POST라면 메인화면으로
     if request.method == "POST":
-        
+        print(request.POST)
+        print(request.POST.get('exit'))
+        print(request.POST.get('exit2'))
         game_attend = GameAttend.objects.get(user=player)
         game_attend.delete()
         game_room.people_num = game_room.people_num - 1
         if game_room.people_num == 0:
             game_room.delete()
-        print(request.POST)
-        print(request.GET)
-        return redirect('chat:index')
-    else:
         
-        print(game_room.people_num)
-        #게임의 플레이어로 GameAttend에 저장하고
-        #대기실에 들어가도록 한다.
-        #유저의 이름이 GameAttend에 저장되어 있지 않고 참s가자의 수가 2미만이면 db생성
-        #게임 참가자가 아나면서 참가자 수가 2미만이면 게임참가 db에 이름 저장
-        if game_room.people_num < 2 and not GameAttend.objects.filter(user=player).exists():
-            game_attend = GameAttend(gameroom=game_room, user=player)
-            game_attend.save()
-            game_room.people_num += 1
-            game_room.save()
-        #게임 참가자db에 게임 참가자가 2이상이고 로그인 유저가 참가자 db에 이름이 없으면 관전자로 빼냄
-        elif game_room.people_num >= 2 and not GameAttend.objects.filter(user=player).exists():
-            game_watch = GameWatch(gameroom=game_room, user=player)
-            game_watch.save()
-            
-            
-        """if (game_room.people_num < 2)and(not(GameAttend.objects.get(user__exist=player))):
-                game_attend = GameAttend(gameroom=game_room, user=player)
-                game_attend.save()
-                game_room.people_num += 1
-                game_room.save()"""
-        """try:
-            if (game_room.people_num < 2)and(not(player.users)):
-                game_attend = GameAttend(gameroom=game_room, user=player)
-                game_attend.save()
-                game_room.people_num += 1
-                game_room.save()
-        except:
+        #print(request.GET.get())
+        if request.POST.get('exit2'):
+            return redirect('chat:index')'''
+    if request.method == "POST":
+        return redirect('chat:exit_room',room_name=room_name)
+    
+    game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
+    player = User.objects.get(username= request.user.username) #입장하는 유저의db
+
+    print(game_room.people_num)
+    #게임의 플레이어로 GameAttend에 저장하고
+    #대기실에 들어가도록 한다.
+    #유저의 이름이 GameAttend에 저장되어 있지 않고 참s가자의 수가 2미만이면 db생성
+    #게임 참가자가 아나면서 참가자 수가 2미만이면 게임참가 db에 이름 저장
+    if game_room.people_num < 2 and not GameAttend.objects.filter(user=player).exists():
+        game_attend = GameAttend(gameroom=game_room, user=player)
+        game_attend.save()
+        game_room.people_num += 1
+        game_room.save()
+    #게임 참가자db에 게임 참가자가 2이상이고 로그인 유저가 참가자 db에 이름이 없으면 관전자로 빼냄
+    elif game_room.people_num >= 2 and not GameAttend.objects.filter(user=player).exists():
+        game_watch = GameWatch(gameroom=game_room, user=player)
+        game_watch.save()
+        
+        
+    """if (game_room.people_num < 2)and(not(GameAttend.objects.get(user__exist=player))):
             game_attend = GameAttend(gameroom=game_room, user=player)
             game_attend.save()
             game_room.people_num += 1
             game_room.save()"""
+    """try:
+        if (game_room.people_num < 2)and(not(player.users)):
+            game_attend = GameAttend(gameroom=game_room, user=player)
+            game_attend.save()
+            game_room.people_num += 1
+            game_room.save()
+    except:
+        game_attend = GameAttend(gameroom=game_room, user=player)
+        game_attend.save()
+        game_room.people_num += 1
+        game_room.save()"""
         
         
         
-        #대기실 입장
-        return render(request, 'chat/waiting_room.html', {
-            'room_name': room_name, #방 url넘버라서 필요
-            'user_name': request.user.username, #방안에서 채팅 구현하여서 필요
-        })
+    #대기실 입장
+    return render(request, 'chat/waiting_room.html', {
+        'room_name': room_name, #방 url넘버라서 필요
+        'user_name': request.user.username, #방안에서 채팅 구현하여서 필요
+    })
+
+def exit_room(request, room_name):
+    '''게임룸 퇴장'''
+
+    if request.user.is_authenticated == False:
+        return redirect('common:login')
+    
+    game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
+    player = User.objects.get(username= request.user.username) #입장하는 유저의 db
+    game_attend = GameAttend.objects.get(user=player) #유저가 참가중인 게임룸의 db
+    
+    print(request.method)
+    
+    game_attend.delete()
+    game_room.people_num = game_room.people_num - 1
+    game_room.save()
+    if game_room.people_num == 0:
+        game_room.delete()
+
+    return redirect('chat:index')
