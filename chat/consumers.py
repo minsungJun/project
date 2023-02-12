@@ -71,6 +71,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # -----------------------게임 기능 수신---------------------------
         elif text_data_json['send_type'] == 'dice_roll':
+            print('im working')
             # 주사위 굴리기
             room_name = text_data_json['room_name']
             user_name = text_data_json['user_name']
@@ -90,6 +91,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'used_score': self.sys.used_score,
                     }
                 )
+            print('im working!!')
 
         else:
             # 족보 판별
