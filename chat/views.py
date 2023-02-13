@@ -148,13 +148,21 @@ def waiting_room(request, room_name):
         game_room.save()"""
     
     game_attend = GameAttend.objects.filter(gameroom=game_room)
-        
+    attender_count = game_attend.count()
+    ready_count = 0
+    if game_attend.count() == 2:
+        for attender in game_attend:
+            if attender.user_ready == True:
+                ready_count = ready_count + 1
         
     #대기실 입장
     return render(request, 'chat/waiting_room.html', {
         'room_name': room_name, #방 url넘버라서 필요
         'user_name': request.user.username, #방안에서 채팅 구현하여서 필요
-        'game_attend': game_attend, #방에 연결되었는 참가자 db
+        'game_attend': game_attend, #방에 연결되었는 참가자 db 모두
+        'user': player,
+        'attender_count': attender_count,
+        'ready_count': ready_count
     })
 
 def exit_room(request, room_name):
@@ -184,18 +192,18 @@ def game_ready(request, room_name):
         return redirect('common:login')
     
     player = User.objects.get(username= request.user.username) #입장하는 유저의 db
-    game_attend = GameAttend.objects.get(user=player) #유저가 참가중인 게임룸의 db
+    #game_attend = GameAttend.objects.get(user=player) #유저가 참가중인 게임룸의 db
     #레디 여부는 게임 참가자 db에 저장
 
-    if game_attend.user_ready == False:
-        game_attend.user_ready = True
-        game_attend.save()
+    if player.users.user_ready == False:
+        player.users.user_ready = True
+        player.users.save()
     else:
-        game_attend.user_ready = False
-        game_attend.save()
+        player.users.user_ready = False
+        player.users.save()
     
     #return redirect('chat:waiting_room', room_name)
-    return redirect('chat:index')
+    return redirect('chat:waiting_room', room_name)
 
 def game_start(request, room_name):
     '''게임 시작'''
@@ -203,3 +211,17 @@ def game_start(request, room_name):
     if request.user.is_authenticated == False:
         return redirect('common:login')
     
+    ready_count = 0
+    
+    game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
+    game_attend = GameAttend.objects.filter(gameroom=game_room)
+    
+    if game_attend.count() == 2:
+        for attender in game_attend:
+            if attender.user_ready == True:
+                ready_count = ready_count + 1
+    
+    if game_attend.count() == 2 and ready_count == 2:
+        return redirect('chat:room', room_name)
+    else:
+        return redirect('chat:waiting_room', room_name)
