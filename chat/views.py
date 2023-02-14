@@ -37,18 +37,17 @@ def make_room(request):
 
     if request.method == 'POST':
         #화면에서 받은 데이터로 폼값을 채움
-        form = RoomForm(request.POST) 
+        form = RoomForm(request.POST)
         print(form)
-        player = User.objects.get(username= request.user.username) #현제 로그인 중인 유저의 db ##
-        #is_valid()는 폼값이 유효한지 검사, 현제 로그인중인 유저가 게임 참가중db에 이름이 없으면 
+        player = User.objects.get(username= request.user.username) #현제 로그인 중인 유저의 db
+        #is_valid()는 폼값이 유효한지 검사, 현제 로그인중인 유저가 게임 참가중db에 이름이 없으면
         #게임룸을 제작
-        if form.is_valid() and not GameAttend.objects.filter(user=player).exists(): ##
+        if form.is_valid() and not GameAttend.objects.filter(user=player).exists():
             #form으로 Gmae_room모델의 데이터를 저장
             #commit=False는 임시저장을 의미
             game_room = form.save(commit=False)
             game_room.host = request.user.username
             game_room.people_num = game_room.people_num+1
-            #game_room.turn = 0
             game_room.save()
             GameAttend(gameroom=game_room, user=player).save()
             #chat라는 앱의 room이라는 이름의 url실행
@@ -123,7 +122,6 @@ def waiting_room(request, room_name):
     if game_room.people_num < 2 and not GameAttend.objects.filter(user=player).exists():
         game_attend = GameAttend(gameroom=game_room, user=player)
         game_attend.save()
-        #game_room.guest = request.user.username
         game_room.people_num += 1
         game_room.save()
     #게임 참가자db에 게임 참가자가 2이상이고 로그인 유저가 참가자 db에 이름이 없으면 관전자로 빼냄
@@ -175,9 +173,9 @@ def exit_room(request, room_name):
     if request.user.is_authenticated == False:
         return redirect('common:login')
     
-    game_room = GameRoom.objects.get(room_url = room_name)     #입장할 게임룸의 db
+    game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
     player = User.objects.get(username= request.user.username) #입장하는 유저의 db
-    game_attend = GameAttend.objects.get(user=player)          #유저가 참가중인 게임룸의 db
+    game_attend = GameAttend.objects.get(user=player) #유저가 참가중인 게임룸의 db
     
     print(request.method)
     
