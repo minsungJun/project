@@ -1,11 +1,31 @@
 
-chatSocket.onopen = () => { //웹 소켓 생성 완료시 실
+chatSocket.onopen = () => { //웹 소켓 생성 완료시 실행
     chatSocket.send(JSON.stringify({
         'send_type': 'enter',
         'user_name': userName,
         'room_name': roomName,
     }));
 };
+
+chatSocket.onclose = () => { //웹 소켓 종료시에 실행
+    chatSocket.send(JSON.stringify({
+        'send_type': 'close',
+        'user_name': userName,
+        'room_name': roomName,
+    }));
+};
+
+function disconnect(){
+    chatSocket.onclose();
+}
+
+window.onbeforeunload = function() {
+    console.log("[window onbeforeunload] : [start]");
+    console.log("");
+    disconnect();
+    
+    //return "브라우저를 종료하시겠습니까?";
+};	
 
 chatSocket.onmessage = (e) => {
     let data = JSON.parse(e.data);
@@ -59,9 +79,7 @@ chatSocket.onmessage = (e) => {
 
 };
 
-chatSocket.onclose = (e) => {
-    console.error('Chat socket closed unexpectedly');
-};
+
 
 document.querySelector("#chat-message-input").focus();
 document.querySelector("#chat-message-input").addEventListener("keyup",(e) => {
