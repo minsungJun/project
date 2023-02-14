@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class='sub_div'>
+    <textarea id="chat-log" cols="73" rows="15"></textarea><br />
+    <input id="chat-message-input" type="text" class="form-control" z-index="2">
+    <input id="chat-message-submit" type="button" value="Send" z-index="2"><br /><br/>
+  </div>
+
+    <table class="dicetable">
+    <tr>
+    <td id='d0' onclick='color(0)'>D1
+    <td id='d1' onclick='color(1)'>D2
+    <td id='d2' onclick='color(2)'>D3
+    <td id='d3' onclick='color(3)'>D4
+    <td id='d4' onclick='color(4)'>D5
+    <td id='test-submit'>START
+    </table>
+    <br>
+    <table class="gametable">
+      <tr><td>점수판<td width='140'>Player1<td width='140'>Player2
+      <tr><td>1<td id='p10' onclick='number(1)'><td id='p20' onclick='number(1)'>
+      <tr><td>2<td id='p11' onclick='number(2)'><td id='p21' onclick='number(2)'>
+      <tr><td>3<td id='p12' onclick='number(3)'><td id='p22' onclick='number(3)'>
+      <tr><td>4<td id='p13' onclick='number(4)'><td id='p23' onclick='number(4)'>
+      <tr><td>5<td id='p14' onclick='number(5)'><td id='p24' onclick='number(5)'>
+      <tr><td>6<td id='p15' onclick='number(6)'><td id='p25' onclick='number(6)'>
+      <tr><td>>= 63<td id='p16'><td id='p26'>
+      <tr><td>three of kind<td id='p17' onclick='triple()'><td id='p27' onclick='triple()'>
+      <tr><td>four of kind<td id='p18' onclick='fourcard()'><td id='p28' onclick='fourcard()'>
+      <tr><td>fullhouse<td id='p19' onclick='fullhouse()'><td id='p29' onclick='fullhouse()'>
+      <tr><td>small straight<td id='p110' onclick='Sstraight()'><td id='p210' onclick='Sstraight()'>
+      <tr><td>large straight<td id='p111' onclick='Lstraight()'><td id='p211' onclick='Lstraight()'>
+      <tr><td>yacht<td id='p112' onclick='yachu()'><td id='p212' onclick='yachu()'>
+      <tr><td>choice<td id='p113' onclick='choice()'><td id='p213' onclick='choice()'>
+      <tr><td>total<td id='p114'><td id='p214'>
+    </table>
+
+    <script src="/static/JS/game_player.js" type="text/javascript"> </script>
+    <script src="/static/JS/preview_score.js" type="text/javascript"> </script>
+    <script>
+        
+        let lock = [false, false, false, false, false];
+        let roomName = "{{ room_name | escapejs }}"; //room_name으로 전달 받은 방번호를 roomName에 저장
+        let userName = "{{ user_name | escapejs }}"; //user_name으로 전달 받은 유저이름을 userName에 저장
+
+        let chatSocket = new WebSocket(
+            `ws://${window.location.host}/ws/chat/${roomName}/`
+        );
+    </script>
+    <script src="/static/JS/system.js" type="text/javascript"> </script>
+
+    {% endblock %}

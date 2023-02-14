@@ -1,0 +1,115 @@
+<!-- chat/templates/chat/index.html -->
+{% extends 'base.html' %}
+{% load chat_filter %}
+{% block content %}
+    <div>
+    <a href="{% url 'chat:make_room' %}"><button type="button" class="btn btn-primary">방 생성</button></a><br>
+    What chat room would you like to enter?<br/>
+    <input id="room-name-input" type="text" class="form-control" width="50%"/><br/>
+    <input id="room-name-submit" type="button" value="Enter"/>
+    </div>
+
+    <div class="container my-3">
+        <table class="table">
+            <thead>
+            <tr class="thead-dark">
+                <th>번호</th>
+                <th>방제</th>
+                <!-- 이후 방 생성자, 방 주소, 방 현제 인원수, 관전자 수 등 추가-->
+                
+            </tr>   
+            </thead>
+            <tbody>
+            {% if game_room_list %}
+            {% for game_room in game_room_list %}
+            <tr>
+                <td>{{ game_room_list.paginator.count|sub:game_room_list.start_index|sub:forloop.counter0|add:1 }}</td>
+                <td>
+                    <a href="{% url 'chat:waiting_room' game_room.room_url %}">
+                        {{ game_room.room_name }}
+                    </a>
+                    {% if game_room.people_num > 0 %}
+                    <span class="text-danger small ml-2">
+                        {{ game_room.people_num.count }}
+                    </span>
+                    {% endif %}
+                </td>
+                <!--<td>{{ question.create_date }}</td>-->
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="3">방이 존재하지 않습니다.</td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        <!-- 페이징처리 시작 -->
+        <ul class="pagination justify-content-center">
+            <!-- 이전 페이지 -->
+            {% if game_room_list.has_previous %}
+            <li class="page-item">
+                <a href="?page={{ game_room_list.previous_page_number }}" class="page-link">
+                    이전
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a href="#" class="page-link" tabindex="-1" aria-disabled="true">
+                    이전
+                </a>
+            </li>
+            {% endif %}
+            <!-- 페이지 리스트 -->
+            {% for page_number in game_room_list.paginator.page_range %}
+            {% if page_number >= game_room_list.number|add:-5 and page_number <= game_room_list.number|add:5 %}
+                {% if page_number == game_room_list.number %}
+                <li class="page-item active" aria-current="page">
+                    <a href="?page={{ page_number }}" class="page-link">
+                        {{ page_number }}
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a href="?page={{ page_number }}" class="page-link">
+                        {{ page_number }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endif %}
+            {% endfor %}
+            <!-- 다음 페이지 -->
+            {% if game_room_list.has_next %}
+            <li class="page-item">
+                <a href="?page={{ gmae_room_list.next_page_number}}" class="page-link">
+                    다음
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a href="#" class="page-link" tabindex="-1" aria-disabled="true">
+                    다음
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <!-- 페이징 처리 끝 -->
+        <a href="{% url 'chat:make_room' %}" class="btn btn-primary">
+            방 생성
+        </a>
+    </div>
+
+    <script>
+        document.querySelector('#room-name-input').focus();
+        document.querySelector('#room-name-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#room-name-submit').click();
+            }
+        };
+
+        document.querySelector('#room-name-submit').onclick = function(e) {
+            var roomName = document.querySelector('#room-name-input').value;
+            window.location.pathname = '/chat/' + roomName + '/';
+        };
+    </script>
+{% endblock %}
