@@ -1,8 +1,10 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from chat import game_system
+from chat import game_system, game
+
 
 room = {}
+room_turn = {}
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -34,23 +36,42 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print('웹소켓에서 받은 JSON 형식 : ')
         print(text_data_json)
 
-        # -----------------------유저가 방에 입장---------------------------#나중에 합친 후 변경해야 함
+        # -----------------------유저가 방에 입장--------------------------- # 나중에 합친 후 변경해야 함
         if text_data_json['send_type'] == 'enter':
             userName = text_data_json['user_name']
             roomName = text_data_json['room_name']
             if roomName not in room:
-                room[roomName] = {'room_turn': 0}
+                room[roomName] = {}
+                room_turn[roomName] = {'room_turn': 0}
 
-                # print(len(room[roomName]))
-                # print(room.get(roomName))
             if roomName in room:
-                if len(room[roomName]) < 3:
-                    room[roomName][userName] = len(room[roomName])-1
+                if len(room[roomName]) == 0: #방에 최초로 입장한 유저 처리
+                    room[roomName][userName] = 0
+                    print(room.get(roomName))
 
-                    # print(len(room[roomName]))
+                elif len(room[roomName]) == 1: #그 이후로 방에 입장한 유저 처리
+                    for key, value in room[roomName].items():
+                        if key != userName:
+                            if value == 0:
+                                room[roomName][userName] = 1
+                                break
+                            elif value == 1:
+                                room[roomName][userName] = 0
+                                break
+                    
+                    #room[roomName][userName] = len(room[roomName])
                     print(room.get(roomName))
                 else:
                     print("error")
+        #------------------------유저가 방에서 퇴장------------------------
+        elif text_data_json['send_type'] == 'close':
+            print('close')
+            userName = text_data_json['user_name']
+            roomName = text_data_json['room_name']
+            del room[roomName][userName]
+            print(room.get(roomName))
+
+
 
         # -----------------------채팅 내용 수신---------------------------
         elif text_data_json['send_type'] == 'message':
@@ -71,13 +92,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # -----------------------게임 기능 수신---------------------------
         elif text_data_json['send_type'] == 'dice_roll':
+            print('im working')
             # 주사위 굴리기
             room_name = text_data_json['room_name']
             user_name = text_data_json['user_name']
             get_room_user = room.get(room_name)#나중에 합친 후 변경해야 함
             room_user_number = get_room_user.get(user_name)#나중에 합친 후 변경해야 함
 
-            if get_room_user['room_turn'] % 2 == get_room_user[user_name]:
+            #print(game.test(room_name, user_name))
+
+
+
+            if room_turn[room_name]['room_turn'] % 2 == get_room_user[user_name]:
                 self.sys.dice_lock = text_data_json['lock_data']
                 self.sys.roll()
                 await self.channel_layer.group_send(
@@ -90,6 +116,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'used_score': self.sys.used_score,
                     }
                 )
+            print('im working!!')
 
         else:
             # 족보 판별
@@ -97,7 +124,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             user_name = text_data_json['user_name']
             get_room_user = room.get(room_name)#나중에 합친 후 변경해야 함
 
-            if get_room_user['room_turn'] % 2 == get_room_user[user_name]:
+            if room_turn[room_name]['room_turn'] % 2 == get_room_user[user_name]:
 
                 unused = False
 
@@ -140,7 +167,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 'user_number': room_user_number + 1,
                             }
                         )
-                        get_room_user['room_turn'] += 1
+                        room_turn[room_name]['room_turn'] += 1
                         print(get_room_user)
                     #else: 에러처리
 
@@ -179,7 +206,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'used_score': used_score,
         }))
 
-    # 점수 표시
+    # 점수 표시 ^^^^위에랑 통합하기
     async def score_table(self, event):
         score = event['score']
         room_user_number = event['user_number']

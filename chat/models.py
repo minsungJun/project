@@ -13,13 +13,16 @@ class GameRoom(models.Model):
     host = models.CharField(max_length=50)
     people_num = models.IntegerField(default=0) #player_num
     #people_watch_num = models.IntegerField(default=0) #관전자수
+    turn = models.IntegerField(default=0)
+    guest = models.CharField(max_length=50, null=True)
+
 
     def __str__(self) -> str:
         return self.room_name
 
 class GameAttend(models.Model):
     gameroom = models.ForeignKey(
-        GameRoom,
+        GameRoom,# 연결
         on_delete=models.CASCADE,
         related_name='gamerooms', #참조시 gameattend_set대신에 사용, 역참조시에도 사용
     )
