@@ -27,33 +27,42 @@
         </tr>   
         </thead>
         <tbody>
-        {% if game_room_list %}
-        {% for game_room in game_room_list %}
+        {% if game_attend %}
+        {% for game_attender in game_attend %}
         <tr>
-            <td>{{ game_room_list.paginator.count|sub:game_room_list.start_index|sub:forloop.counter0|add:1 }}</td>
+            <td>{{ game_attender.user.username }}</td>
             <td>
-                <a href="{% url 'chat:waiting_room' game_room.room_url %}">
-                    {{ game_room.room_name }}
-                </a>
-                {% if game_room.people_num > 0 %}
-                <span class="text-danger small ml-2">
-                    {{ game_room.people_num.count }}
-                </span>
+                {% if game_attender.user.username == user_name %}
+                    {% if game_attender.user_ready %}
+                        <a href="#" class="" data-url="{% url 'chat:game_ready' room_name %}" id="ready2">준비 완료</a>
+                    {% else %}
+                        <a href="#" class="" data-url="{% url 'chat:game_ready' room_name %}" id="not_ready2">준비</a>
+                    {% endif %}
+                {% else %}
+                    {% if game_attender.user_ready %}
+                        준비완료
+                    {% else %}
+                        준비
+                    {% endif %}
                 {% endif %}
             </td>
-            <!--<td>{{ question.create_date }}</td>-->
+            <td>
+                {% if game_attender.gameroom.host == game_attender.user.username %}
+                방장
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
         {% else %}
         <tr>
-            <td colspan="3">방이 존재하지 않습니다.</td>
+            <td colspan="3">유저가 존재하지 않습니다.</td>
         </tr>
         {% endif %}
         </tbody>
     </table>
 
     <textarea id="chat-log" cols="100" rows="20"></textarea><br />
-    <input id="chat-message-input" type="text" class="form-control" size="100"><br />ㄴ
+    <input id="chat-message-input" type="text" class="form-control" size="100"><br />
     <input id="chat-message-submit" type="button" value="Send"/><br />
     <div class="beforeunload"></div>
 
@@ -249,6 +258,20 @@ $(document).ready(function() {
     });
 });
 $(document).ready(function() {
+    $("#not_ready2").on('click', function() {
+        if(confirm("준비완료?")) {
+            location.href = $(this).data('url');
+        }
+    });
+});
+$(document).ready(function() {
+    $("#ready2").on('click', function() {
+        if(confirm("준비가 더 필요하십니까?")) {
+            location.href = $(this).data('url');
+        }
+    });
+});
+$(document).ready(function() {
     $("#start1").on('click', function() {
             location.href = $(this).data('url');
     });
@@ -332,12 +355,13 @@ $(window).on('focus', function () {
  });
 
  var toDoWhenClosing = function() {
-	 $.ajax({
-		 type: "POST",
-		 url: "http://127.0.0.1:8000/chat/{{room_name}}/exit/",
-		 async: false
-	 });
-	 return;
+	/*$.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/chat/{{room_name}}/exit/",
+        async: false
+	});*/
+    document.querySelector("#start1").click();
+	return;
  };
 
 window.addEventListener("unload", function (e) {

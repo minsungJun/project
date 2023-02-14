@@ -148,6 +148,7 @@ def waiting_room(request, room_name):
         game_room.save()"""
     
     game_attend = GameAttend.objects.filter(gameroom=game_room)
+    print(game_attend)
     attender_count = game_attend.count()
     ready_count = 0
     if game_attend.count() == 2:
@@ -159,10 +160,11 @@ def waiting_room(request, room_name):
     return render(request, 'chat/waiting_room.html', {
         'room_name': room_name, #방 url넘버라서 필요
         'user_name': request.user.username, #방안에서 채팅 구현하여서 필요
-        'game_attend': game_attend, #방에 연결되었는 참가자 db 모두
         'user': player,
         'attender_count': attender_count,
-        'ready_count': ready_count
+        'ready_count': ready_count,
+        'game_room': game_room,
+        'game_attend': game_attend
     })
 
 def exit_room(request, room_name):
