@@ -31,6 +31,7 @@ class GameAttend(models.Model):
         on_delete=models.CASCADE,
         related_name='users'
     )
+    user_ready = models.BooleanField(default=False)
     
     def __str__(self) -> str:
         return f'{self.gameroom}: {self.user}'

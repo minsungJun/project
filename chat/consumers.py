@@ -73,6 +73,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
+        # -----------------------게임 시작---------------------------
+        elif text_data_json['send_type'] == 'start':
+            userName = text_data_json['user_name']
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_start',
+                    'user_name': userName,
+                    # 'present_time': presentTime
+                }
+            )
+
         # -----------------------채팅 내용 수신---------------------------
         elif text_data_json['send_type'] == 'message':
             message = text_data_json['message']
@@ -187,6 +200,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'send_type': 'message',
             'user_name': userName,
             # 'present_time': presentTime
+        }))
+
+    # ------------------게임 시작 신호 전달------------------------
+    # "room" 그룹에서 게임 시작 정보 수신
+    async def game_start(self, event):
+        userName = event['user_name']
+        await self.send(text_data=json.dumps({
+            'send_type': 'start',
+            'user_name': userName,
         }))
 
     # -------------------게임 기능 전달-------------------------
