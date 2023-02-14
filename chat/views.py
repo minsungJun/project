@@ -48,7 +48,7 @@ def make_room(request):
             game_room = form.save(commit=False)
             game_room.host = request.user.username
             game_room.people_num = game_room.people_num+1
-            game_room.turn = 0
+            #game_room.turn = 0
             game_room.save()
             GameAttend(gameroom=game_room, user=player).save()
             #chat라는 앱의 room이라는 이름의 url실행
@@ -123,7 +123,7 @@ def waiting_room(request, room_name):
     if game_room.people_num < 2 and not GameAttend.objects.filter(user=player).exists():
         game_attend = GameAttend(gameroom=game_room, user=player)
         game_attend.save()
-        game_room.guest = request.user.username
+        #game_room.guest = request.user.username
         game_room.people_num += 1
         game_room.save()
     #게임 참가자db에 게임 참가자가 2이상이고 로그인 유저가 참가자 db에 이름이 없으면 관전자로 빼냄
@@ -148,13 +148,25 @@ def waiting_room(request, room_name):
         game_attend.save()
         game_room.people_num += 1
         game_room.save()"""
-        
-        
+    
+    game_attend = GameAttend.objects.filter(gameroom=game_room)
+    print(game_attend)
+    attender_count = game_attend.count()
+    ready_count = 0
+    if game_attend.count() == 2:
+        for attender in game_attend:
+            if attender.user_ready == True:
+                ready_count = ready_count + 1
         
     #대기실 입장
     return render(request, 'chat/waiting_room.html', {
         'room_name': room_name, #방 url넘버라서 필요
         'user_name': request.user.username, #방안에서 채팅 구현하여서 필요
+        'user': player,
+        'attender_count': attender_count,
+        'ready_count': ready_count,
+        'game_room': game_room,
+        'game_attend': game_attend
     })
 
 def exit_room(request, room_name):
@@ -176,3 +188,44 @@ def exit_room(request, room_name):
         game_room.delete()
 
     return redirect('chat:index')
+
+def game_ready(request, room_name):
+    '''게임 준비 처리'''
+
+    if request.user.is_authenticated == False:
+        return redirect('common:login')
+    
+    player = User.objects.get(username= request.user.username) #입장하는 유저의 db
+    #game_attend = GameAttend.objects.get(user=player) #유저가 참가중인 게임룸의 db
+    #레디 여부는 게임 참가자 db에 저장
+
+    if player.users.user_ready == False:
+        player.users.user_ready = True
+        player.users.save()
+    else:
+        player.users.user_ready = False
+        player.users.save()
+    
+    #return redirect('chat:waiting_room', room_name)
+    return redirect('chat:waiting_room', room_name)
+
+def game_start(request, room_name):
+    '''게임 시작'''
+
+    if request.user.is_authenticated == False:
+        return redirect('common:login')
+    
+    ready_count = 0
+    
+    game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
+    game_attend = GameAttend.objects.filter(gameroom=game_room)
+    
+    if game_attend.count() == 2:
+        for attender in game_attend:
+            if attender.user_ready == True:
+                ready_count = ready_count + 1
+    
+    if game_attend.count() == 2 and ready_count == 2:
+        return redirect('chat:room', room_name)
+    else:
+        return redirect('chat:waiting_room', room_name)

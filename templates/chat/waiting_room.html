@@ -4,7 +4,7 @@
         <a href="#" class="btn btn-primary" data-url="{% url 'chat:game_start' room_name %}" id="start1" style="display:none">게임시작</a>
         <a href="#" class="btn btn-primary" data-url="{% url 'chat:game_start' room_name %}" id="start2">게임시작</a>
     {% else %}
-        <a href="#" class="" data-url="{% url 'chat:game_start' room_name %}" id="not_ready_to_start">게임시작</a>
+        <a href="#" class="" data-url="{% url 'chat:waiting_room' room_name %}" id="not_ready_to_start">게임시작</a>
     {% endif %}
     {% if user.users.user_ready %}
         <a href="#" class="btn btn-primary" data-url="{% url 'chat:game_ready' room_name %}" id="ready">준비 완료</a>
@@ -177,7 +177,9 @@
             document.querySelector("#chat-log").value += (presentTime + '\n');// 현재 시간 출력
         }
         else if(data['send_type'] == 'start'){
+            //window.reload();
             document.querySelector("#start1").click();
+            //location.href="{% url 'chat:room' room_name %}"
         }
     };
     
