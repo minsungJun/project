@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rank',
     'channels',
     'chat',
     'common.apps.CommonConfig',
@@ -145,3 +147,5 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = 'true' # 이구문이 있으면 consumers.py에서 database_sync_to_async사용 가능 단, 데이터 손실 가능성 있음
