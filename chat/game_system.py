@@ -20,6 +20,11 @@ class System:
             if self.dice.count(self.dice[0]) == 5:
                 self.score_table[12] += 50
 
+    def check_game_over():
+        if False not in self.used_score:
+            return
+
+
     '''
     def yachu(self):
         total = 0
