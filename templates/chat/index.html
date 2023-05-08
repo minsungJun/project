@@ -2,12 +2,6 @@
 {% extends 'base.html' %}
 {% load chat_filter %}
 {% block content %}
-    <div>
-    <a href="{% url 'chat:make_room' %}"><button type="button" class="btn btn-primary">방 생성</button></a><br>
-    What chat room would you like to enter?<br/>
-    <input id="room-name-input" type="text" class="form-control" width="50%"/><br/>
-    <input id="room-name-submit" type="button" value="Enter"/>
-    </div>
 
     <div class="container my-3">
         <table class="table">
