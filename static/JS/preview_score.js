@@ -4,6 +4,7 @@
   //유저 번호를 받아내서 왼쪽, 오른쪽 구분해서 띄워놓기
   //
   
+  
 
   function preview_num(dice_value, user_number, used_score, func_num){
     if(used_score[func_num]==false){
@@ -70,8 +71,8 @@
       (dice_value.includes(5)&&dice_value.includes(6)&&dice_value.includes(3)&&dice_value.includes(4)) ){
         total = 15;
       }
+      document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')'
     }
-    document.getElementById('p'+String(user_number)+String(func_num)).textContent = '(+' + total + ')'
   }
 
   function preview_Lstraight(dice_value, user_number, used_score, func_num){

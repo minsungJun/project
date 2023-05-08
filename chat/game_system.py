@@ -58,8 +58,8 @@ class System:
                 self.score_table[5] >= 63:
             self.score_table[6] = 35
 
-    # 안넣은 기능 :
-    # 구현한 기능 : 리롤 횟수 제한, 턴 체크, 턴 넘기기, 점수 중복 입력 방지, 점수 미리 보기, 야추 중복 판별
+    # 안넣은 기능 : 야추 중복 판별
+    # 구현한 기능 : 리롤 횟수 제한, 턴 체크, 턴 넘기기, 점수 중복 입력 방지, 점수 미리 보기, 
     # 턴 넘기기 기능 구현할 때, 입력값 넣어서 점수 미리 보기 인지 아닌지 확인 하는거 해야됨
 
     def triple(self):
@@ -165,6 +165,9 @@ class System:
             return True
         else :
             return False
+
+
+
 
     def sum_scores(self):
         total = 0

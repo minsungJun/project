@@ -51,10 +51,23 @@ chatSocket.onmessage = (e) => {
     else if(data['send_type'] == 'score_table'){
         let dice_value = data['type'];
         let user_number = data['user_number'];
+        let game_over = data['game_over']
         dice_clear();
+        if(game_over==true){
+            console.log("gameover test3")
+            document.querySelector("#chat-log").value += ("!!GAME OVER!! \n")
+            alert("!!GAME OVER!!")
+        }
         for(let i=0; i<15; i++){
             document.getElementById('p'+String(user_number)+String(i)).textContent = dice_value[i];
         }
+        
+    }
+
+    //게임 오버
+    else if(data['send_type'] == 'game_over'){
+        console.log("gameover test3")
+        document.querySelector("#chat-log").value += ("!!GAME OVER!! \n")
     }
 
 };
