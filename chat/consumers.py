@@ -115,21 +115,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             #print(game.test(room_name, user_name))
 
 
-            if room_turn[room_name]['room_turn'] < 26:
-                if room_turn[room_name]['room_turn'] % 2 == get_room_user[user_name]:
-                    self.sys.dice_lock = text_data_json['lock_data']
-                    self.sys.roll()
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'dice_roll',
-                            'dice': self.sys.dice,
-                            'roll_cnt': self.sys.roll_cnt,
-                            'user_number': room_user_number + 1,
-                            'used_score': self.sys.used_score,
-                        }
-                    )
-                print('im working!!')
+
+            if room_turn[room_name]['room_turn'] % 2 == get_room_user[user_name]:
+                self.sys.dice_lock = text_data_json['lock_data']
+                self.sys.roll()
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'dice_roll',
+                        'dice': self.sys.dice,
+                        'roll_cnt': self.sys.roll_cnt,
+                        'user_number': room_user_number + 1,
+                        'used_score': self.sys.used_score,
+                    }
+                )
+            print('im working!!')
 
         else:
             # 족보 판별
@@ -169,38 +169,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 if unused == True:
                     print('점수 테이블 : ')
                     print(self.sys.score_table)
-                    print(self.sys.used_score)
 
                     if user_name in get_room_user:
-                        room_turn[room_name]['room_turn'] += 1
                         room_user_number = get_room_user.get(user_name)
-                        if room_turn[room_name]['room_turn'] > 25:
-                            await self.channel_layer.group_send(
-                                self.room_group_name,
-                                {
-                                    'type': 'score_table',
-                                    'score': self.sys.score_table,
-                                    'user_number': room_user_number + 1,
-                                    'game_over': True,
-                                }
-                            )
-                            print('gameover test')
-                        else:
-                            await self.channel_layer.group_send(
-                                self.room_group_name,
-                                {
-                                    'type': 'score_table',
-                                    'score': self.sys.score_table,
-                                    'user_number': room_user_number + 1,
-                                    'game_over': False,
-                                }
-                            )
-
-
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                'type': 'score_table',
+                                'score': self.sys.score_table,
+                                'user_number': room_user_number + 1,
+                            }
+                        )
+                        room_turn[room_name]['room_turn'] += 1
                         print(get_room_user)
-                        print(room_turn)
                     #else: 에러처리
-
 
 
 
@@ -250,20 +232,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def score_table(self, event):
         score = event['score']
         room_user_number = event['user_number']
-        game_over = event['game_over']
         # 웹 소켓으로 메시지 전송
-        if game_over == True:
-            await self.send(text_data=json.dumps({
-                'send_type': 'score_table',
-                'type': score,
-                'user_number': room_user_number,
-                'game_over' : True,
-            }))
-        else:
-            await self.send(text_data=json.dumps({
-                'send_type': 'score_table',
-                'type': score,
-                'user_number': room_user_number,
-                'game_over' : False,
-            }))
-
+        await self.send(text_data=json.dumps({
+            'send_type': 'score_table',
+            'type': score,
+            'user_number': room_user_number,
+        }))
