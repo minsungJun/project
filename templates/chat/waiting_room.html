@@ -3,6 +3,7 @@
     {% if attender_count == 2 and ready_count == 2 %}
         <a href="#" class="btn btn-primary" data-url="{% url 'chat:game_start' room_name %}" id="start1" style="display:none">게임시작</a>
         <a href="#" class="btn btn-primary" data-url="{% url 'chat:game_start' room_name %}" id="start2">게임시작</a>
+        <a href="#" class="btn btn-primary" data-url="{% url 'chat:game_start' room_name %}" id="start3">게임시작3</a>
     {% else %}
         <a href="#" class="" data-url="{% url 'chat:waiting_room' room_name %}" id="not_ready_to_start">게임시작</a>
     {% endif %}
@@ -176,6 +177,7 @@
             //document.querySelector("#chat-log").value += (presentTime + '\n'); //굳이 쓸필요 없음?
             document.querySelector("#chat-log").value += (presentTime + '\n');// 현재 시간 출력
         }
+        //게임 시작신호 수신
         else if(data['send_type'] == 'start'){
             //window.reload();
             document.querySelector("#start1").click();
@@ -284,6 +286,17 @@ $(document).ready(function() {
         chatSocket.send(JSON.stringify({
             'send_type': 'start',
             'user_name': userName,
+            'room_name': roomName,
+        }));
+    });
+});
+$(document).ready(function() {
+    $("#start3").on('click', function() {
+        
+        chatSocket.send(JSON.stringify({
+            'send_type': 'start',
+            'user_name': userName,
+            'room_name': roomName,
         }));
     });
 });

@@ -1,7 +1,10 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from chat import game_system, game
+from django.shortcuts import render, redirect
 
+from chat.models import GameRoom, GameAttend, GameWatch
+from channels.db import database_sync_to_async
 
 room = {}
 room_turn = {}
@@ -10,6 +13,11 @@ room_turn = {}
 class ChatConsumer(AsyncWebsocketConsumer):
 
     sys = None
+
+    @database_sync_to_async
+    def get_data_from_db(self):
+        data = GameAttend.objects.all()
+        return list(data)
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -35,6 +43,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         print('웹소켓에서 받은 JSON 형식 : ')
         print(text_data_json)
+
+        data = await self.get_data_from_db()
+        print(data)
 
         # -----------------------유저가 방에 입장--------------------------- # 나중에 합친 후 변경해야 함
         if text_data_json['send_type'] == 'enter':
@@ -75,7 +86,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # -----------------------게임 시작---------------------------
         elif text_data_json['send_type'] == 'start':
+            print('asefasefasefse')
             userName = text_data_json['user_name']
+            roomName = text_data_json['room_name']
 
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -85,6 +98,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     # 'present_time': presentTime
                 }
             )
+
+            #return redirect('chat:game_start', roomName)
+            #consumer.py에서 redirect로 뷰의 함수에 접근하는 것은 불가능인듯
 
         # -----------------------채팅 내용 수신---------------------------
         elif text_data_json['send_type'] == 'message':
@@ -203,7 +219,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-
     # -----------------HTML로 데이터 전달-----------------------
     # ------------------채팅 메시지 전달------------------------
     # "room" 그룹에서 메시지 수신
@@ -266,4 +281,3 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'user_number': room_user_number,
                 'game_over' : False,
             }))
-

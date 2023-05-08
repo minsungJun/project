@@ -17,3 +17,4 @@ class GameWatchAdmin(admin.ModelAdmin):
     search_fields = ['gameroom']
 
 admin.site.register(GameWatch, GameWatchAdmin)
+
