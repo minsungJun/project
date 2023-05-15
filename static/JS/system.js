@@ -78,6 +78,10 @@ chatSocket.onmessage = (e) => {
         
     }
 
+
+
+
+
 };
 
 function check_winner(dic, name){

@@ -1,10 +1,8 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from chat import game_system, game
-from django.shortcuts import render, redirect
-
-from chat.models import GameRoom, GameAttend, GameWatch
 from channels.db import database_sync_to_async
+
 
 room = {}
 room_turn = {}
@@ -15,10 +13,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     sys = None
 
-    @database_sync_to_async
-    def get_data_from_db(self):
-        data = GameAttend.objects.all()
-        return list(data)
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -44,9 +38,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         print('웹소켓에서 받은 JSON 형식 : ')
         print(text_data_json)
-
-        data = await self.get_data_from_db()
-        print(data)
 
         # -----------------------유저가 방에 입장--------------------------- # 나중에 합친 후 변경해야 함
         if text_data_json['send_type'] == 'enter':
@@ -88,23 +79,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             del user_score[roomName][userName]
             print(room.get(roomName))
 
-
-        # -----------------------채팅 내용 수신---------------------------
-        elif text_data_json['send_type'] == 'message':
-            message = text_data_json['message']
-            user_name = text_data_json['user_name']
-            # presentTime = text_data_json['present_time']
-            # "room" 그룹에 메시지 전송
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'chat_message',
-                    'message': message,
-                    'user_name': user_name,
-                    # 'present_time': presentTime
-                }
-            )
-
         # -----------------------게임 시작---------------------------
         elif text_data_json['send_type'] == 'start':
             print('asefasefasefse')
@@ -123,6 +97,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
             #return redirect('chat:game_start', roomName)
             #consumer.py에서 redirect로 뷰의 함수에 접근하는 것은 불가능인듯
 
+        # -----------------------채팅 내용 수신---------------------------
+        elif text_data_json['send_type'] == 'message':
+            message = text_data_json['message']
+            user_name = text_data_json['user_name']
+            # presentTime = text_data_json['present_time']
+            # "room" 그룹에 메시지 전송
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'user_name': user_name,
+                    # 'present_time': presentTime
+                }
+            )
+
+
+        # -----------------------게임 시작---------------------------
+        elif text_data_json['send_type'] == 'start':
+            userName = text_data_json['user_name']
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_start',
+                    'user_name': userName,
+                    # 'present_time': presentTime
+                }
+            )
+
+
+
 
         # -----------------------게임 기능 수신---------------------------
         elif text_data_json['send_type'] == 'dice_roll':
@@ -134,7 +140,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             room_user_number = get_room_user.get(user_name)#나중에 합친 후 변경해야 함
 
             #print(game.test(room_name, user_name))
-
 
             # 주사위 굴리기
             if room_turn[room_name]['room_turn'] < 26:
@@ -227,6 +232,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         print(get_room_user)
                         print(room_turn)
                     #else: 에러처리
+
 
 
 

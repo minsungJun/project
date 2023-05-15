@@ -4,6 +4,8 @@ from common.forms import UserForm
 from django.contrib.auth.models import User
 from rank.models import UserRank
 from chat import urls
+from django.contrib.auth.models import User
+from rank.models import UserRank
 
 
 def signup(request):
