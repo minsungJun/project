@@ -1,4 +1,23 @@
 
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items:center;
+
+}
+
+.container-fluid{
+    display: flex;
+  min-width: 500px;
+  align-items:center;
+  padding-left: 10px; 
+  padding-right: 10px;
+}
+
+.chat-message-input {
+  width: 25%;
+}
+
 .no-drag{
   -ms-user-select:none;
   -moz-user-select:-mozs-none;
@@ -9,24 +28,25 @@
 }
 
 .sub_div{
+  right: 0;
   position: absolute;
   z-index:3;
-  left:45%;
 }
 
-td{
-  border:1px solid;
+#main_div{
+  width:95%;
 }
 
 .dicetable{
   width:550px;
   text-align:center;
+  min-width: 550px;
 }
 .gametable{
-  margin:0 0 0 15px;
-  font-size:18px;
-  border:2px solid;
-  text-align:center;
+  /*
+  min-width: 800px;
+  max-width: 850px;
+  */
 }
 
 #d1, #d2, #d3, #d4, #d0{
@@ -34,5 +54,9 @@ td{
   width:74px;
   font-size:30px;
   border-radius:25px;
+  border:2px solid;
+}
+
+#test-submit{
   border:2px solid;
 }

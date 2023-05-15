@@ -6,6 +6,7 @@ from .models import GameRoom, GameAttend, GameWatch
 from django.core.paginator import Paginator
 from .forms import RoomForm
 from django.contrib.auth.models import User
+from rank.models import UserRank
 
 #추가사항
 #대기실에 관전자 입장 함수
@@ -227,3 +228,37 @@ def game_start(request, room_name):
         return redirect('chat:room', room_name)
     else:
         return redirect('chat:waiting_room', room_name)
+
+
+def game_over(request, room_name):
+    if request.user.is_authenticated == False:
+        return redirect('common:login')#로그인 여부
+    
+    player = User.objects.get(username= request.user.username)#플레이어DB
+    game_attend = GameAttend.objects.get(user=player)#참가중인 방 DB
+    player_rank = UserRank.objects.get(user=player)#유저 랭킹
+
+    #POST로 데이터 입력시 랭킹 처리
+    if request.method == "POST":
+        
+        player_rank.total_game += 1
+
+        if request.POST['is_win_input'] == '0': #win
+            player_rank.win_game += 1
+
+        elif request.POST['is_win_input'] == '1': #lose
+            player_rank.lose_game += 1
+
+        else: #3 = draw
+            pass
+
+        #최고점수 갱신
+        if int(request.POST["score_input"]) > player_rank.top_score:
+            player_rank.top_score = int(request.POST["score_input"])
+        
+        player_rank.save()
+
+    game_attend.user_ready = False
+    game_attend.save()
+
+    return redirect("chat:waiting_room", room_name)
