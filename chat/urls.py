@@ -13,7 +13,5 @@ urlpatterns = [
     path('<str:room_name>/exit/', views.exit_room, name='exit_room'),
     path('<str:room_name>/ready/', views.game_ready, name='game_ready'),
     path('<str:room_name>/start/', views.game_start, name='game_start'),
-    #path('<str:room_name>/restart/', views.game_restart, name='game_restart'),
-    #path('<str:room_name>/end/', views.game_end, name='game_end'),
-    path('<str:room_name>/gameover/', views.game_over, name='game_over'),
+    path('<str:room_name>/game_over/', views.game_over, name='game_over'),
 ]
