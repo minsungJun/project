@@ -1,31 +1,11 @@
 
-chatSocket.onopen = () => { //웹 소켓 생성 완료시 실행
+chatSocket.onopen = () => { //웹 소켓 생성 완료시 실
     chatSocket.send(JSON.stringify({
         'send_type': 'enter',
         'user_name': userName,
         'room_name': roomName,
     }));
 };
-
-chatSocket.onclose = () => { //웹 소켓 종료시에 실행
-    chatSocket.send(JSON.stringify({
-        'send_type': 'close',
-        'user_name': userName,
-        'room_name': roomName,
-    }));
-};
-
-function disconnect(){
-    chatSocket.onclose();
-}
-
-window.onbeforeunload = function() {
-    console.log("[window onbeforeunload] : [start]");
-    console.log("");
-    disconnect();
-    
-    //return "브라우저를 종료하시겠습니까?";
-};	
 
 chatSocket.onmessage = (e) => {
     let data = JSON.parse(e.data);
@@ -71,12 +51,26 @@ chatSocket.onmessage = (e) => {
     else if(data['send_type'] == 'score_table'){
         let dice_value = data['type'];
         let user_number = data['user_number'];
-        let game_over = data['game_over']
+        let game_over = data['game_over'];
+        let user_score = data['user_score'];
         dice_clear();
+        //게임 오버
         if(game_over==true){
-            console.log("gameover test3")
-            document.querySelector("#chat-log").value += ("!!GAME OVER!! \n")
-            alert("!!GAME OVER!!")
+            console.log("gameover test333");
+            let is_win = check_winner(user_score, userName)
+            document.querySelector("#chat-log").value += ("!!GAME OVER!!");
+            if(is_win == 0){
+                alert("WINNER");
+            }
+            else if(is_win == 1){
+                alert("LOSER");
+            }
+            else if(is_win == 2){
+                alert("DRAW")
+            }
+            document.getElementById("is_win_input").value = is_win;
+            document.getElementById("score_input").value = user_score[userName];
+            document.getElementById("decide_winner").submit();
         }
         for(let i=0; i<15; i++){
             document.getElementById('p'+String(user_number)+String(i)).textContent = dice_value[i];
@@ -84,15 +78,31 @@ chatSocket.onmessage = (e) => {
         
     }
 
-    //게임 오버
-    else if(data['send_type'] == 'game_over'){
-        console.log("gameover test3")
-        document.querySelector("#chat-log").value += ("!!GAME OVER!! \n")
-    }
-
 };
 
+function check_winner(dic, name){
+    let score_list = Object.keys(dic);
+    let myscore = dic[name];
+    let otherscore;
 
+    score_list.indexOf(name) == 0 ? otherscore = dic[score_list[1]] : otherscore = dic[score_list[0]];
+
+    if(myscore > otherscore){//승
+        return 0; 
+    }
+    else if(myscore < otherscore){//패
+        return 1;
+    }
+    else if(myscore == otherscore){//무
+        return 2;
+    }
+
+}
+
+
+chatSocket.onclose = (e) => {
+    console.error('Chat socket closed unexpectedly');
+};
 
 document.querySelector("#chat-message-input").focus();
 document.querySelector("#chat-message-input").addEventListener("keyup",(e) => {
