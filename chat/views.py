@@ -6,6 +6,7 @@ from .models import GameRoom, GameAttend, GameWatch
 from django.core.paginator import Paginator
 from .forms import RoomForm
 from django.contrib.auth.models import User
+from rank.models import UserRank
 
 #추가사항
 #대기실에 관전자 입장 함수
@@ -229,3 +230,71 @@ def game_start(request, room_name):
         return redirect('chat:room', room_name)
     else:
         return redirect('chat:waiting_room', room_name)
+    
+#리스타트 추가
+"""def game_restart(request, room_name):
+    
+    if request.user.is_authenticated == False:
+        return redirect('common:login')
+
+    game_room = GameRoom.objects.get(room_url = room_name)
+    player = User.objects.get(username= request.user.username)
+    game_attend = GameAttend.objects.get(user=player)
+
+    if request.method == "POST":
+        print(request.POST['is_win_input'])
+
+    game_attend.user_ready = False
+    game_attend.save()
+
+    return redirect('chat:waiting_room', room_name)
+    
+def game_end(request, room_name):
+    
+    if request.user.is_authenticated == False:
+        return redirect('common:login')
+    
+    game_room = GameRoom.objects.get(room_url = room_name)
+    player = User.objects.get(username= request.user.username)
+    game_attend = GameAttend.objects.get(user=player)
+
+    game_attend.delete()
+
+    game_room.people_num = game_room.people_num - 1
+    game_room.save()
+
+    if game_room.people_num == 0:
+        game_room.delete()
+    
+    return redirect('chat:index')"""
+
+def game_over(request, room_name):
+    if request.user.is_authenticated == False:
+        return redirect('common:login')
+    
+    player = User.objects.get(username= request.user.username)
+    game_attend = GameAttend.objects.get(user=player)
+    player_rank = UserRank.objects.get(user=player)
+
+    #POST로 데이터 입력시 랭킹 처리
+    if request.method == "POST":
+        
+        player_rank.total_game += 1
+
+        if request.POST['is_win_input'] == '0': #win
+            player_rank.win_game += 1
+        elif request.POST['is_win_input'] == '1': #lose
+            player_rank.lose_game += 1
+        else: #3 = draw
+            pass
+
+        #최고점수 갱신
+        if request.POST["score_input"] > player_rank.top_score:
+            player_rank.top_score = request.POST["score_input"]
+        
+        player_rank.save()
+
+    game_attend.user_ready = False
+    game_attend.save()
+
+    return redirect("chat:waiting_room", room_name)

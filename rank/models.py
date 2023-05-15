@@ -11,6 +11,7 @@ class UserRank(models.Model):
     total_game = models.IntegerField(default=0)
     win_game = models.IntegerField(default=0)
     lose_game = models.IntegerField(default=0)
+    top_score = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return "{0}".format(self.user)

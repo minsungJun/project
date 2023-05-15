@@ -71,11 +71,34 @@ chatSocket.onmessage = (e) => {
     else if(data['send_type'] == 'score_table'){
         let dice_value = data['type'];
         let user_number = data['user_number'];
+        let game_over = data['game_over'];
+        //밑의 3개의 데이터는 consumers.py에서 받아옴
+        let is_win = 'win';
+        let score = 44;
+        let is_onemore = 'true'
+
         dice_clear();
+        
         for(let i=0; i<15; i++){
             document.getElementById('p'+String(user_number)+String(i)).textContent = dice_value[i];
         }
+
+        if(game_over==true){
+            if(confirm('gmaeover\none more?')){
+                document.getElementById("is_win_input").value = is_win;
+                document.getElementById("score_input").value = score;
+
+                document.getElementById("decide_winner").submit();
+            } 
+            else {
+
+            }
+        }
     }
+
+
+
+
 
 };
 

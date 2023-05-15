@@ -6,4 +6,7 @@ app_name = 'rank'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('total_game/', views.total_game, name='total_game'),
+    path('win_game/', views.win_game, name='win_game'),
+    path('win_rate', views.win_rate, name='win_rate'),
 ]
