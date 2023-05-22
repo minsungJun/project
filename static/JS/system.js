@@ -43,6 +43,8 @@ chatSocket.onmessage = (e) => {
         for(let i=0; i<5; i++){
             document.getElementById('d'+String(i)).textContent = dice_value[i];
         }
+        dice_roll(dice_value);
+        //dice_roll_test2();
         preview_score(dice_value, user_number, used_score);
         document.getElementById('test-submit').textContent = 'Re Roll (' + roll_cnt + '/ 3)';
     }
@@ -100,6 +102,7 @@ function check_winner(dic, name){
     else if(myscore == otherscore){//무
         return 2;
     }
+}
 
 chatSocket.onclose = (e) => {
     console.error('Chat socket closed unexpectedly');
