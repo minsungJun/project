@@ -18,6 +18,12 @@
                 <th><a href="{% url 'rank:win_rate' %}">
                     승률
                 </a></th>
+                <th><a href="{% url 'rank:top_score' %}">
+                    최고점수
+                </a></th>
+                <th><a href="{% url 'rank:rating' %}">
+                    랭킹점수
+                </a></th>
             </tr>   
             </thead>
             <tbody>
@@ -25,7 +31,7 @@
             {% for user_rank in user_rank_list %}
             <tr>
                 <!--차후 등수 공식 만들어 확인하기-->
-                <td> {{ forloop.counter }}</td>
+                <td> {{ user_rank_list.number|sub:1|mul:20|add:forloop.counter }}</td>
                 <!--<td>{{ user_rank_list.paginator.count|sub:user_rank_list.start_index|sub:forloop.counter0|add:1 }}</td>-->
                 <td>
                     {{ user_rank.user }}
@@ -38,6 +44,12 @@
                 </td>
                 <td>
                     {{ user_rank.win_game|win_rate:user_rank.total_game }}%
+                </td>
+                <td>
+                    {{ user_rank.top_score }}점
+                </td>
+                <td>
+                    {{ user_rank.rating }}점
                 </td>
             </tr>
             {% endfor %}

@@ -147,9 +147,8 @@
     
     chatSocket.onopen = () => { //웹 소켓 생성 완료시 실
         chatSocket.send(JSON.stringify({
-            'send_type': 'enter',
+            'send_type': 'user_enter',
             'user_name': userName,
-            'room_name' : roomName,
         }));
     };
     
@@ -182,6 +181,17 @@
             //window.reload();
             document.querySelector("#start1").click();
             //location.href="{% url 'chat:room' room_name %}"
+        }
+        //유저 입장 신호 수신
+        else if(data['send_type'] == 'user_enter'){
+            document.querySelector("#chat-log").value += (data['user_name']+ "님이 입장하셨습니다." + '\t'); //유저 출력 성고
+            document.querySelector("#chat-log").value += (presentTime + '\n');// 현재 시간 출력
+        }
+        //유저 준비신호 수신
+        else if(data['send_type'] == 'ready_click'){
+            if (data['user_name'] != userName) {
+                setTimeout(() => location.reload(), 8);
+            }
         }
     };
     
@@ -250,6 +260,11 @@ $(document).ready(function() {
 $(document).ready(function() {
     $("#not_ready").on('click', function() {
         if(confirm("준비완료?")) {
+            chatSocket.send(JSON.stringify({
+                'send_type': 'ready_click',
+                'user_name': userName,
+                'room_name': roomName,
+            }));
             location.href = $(this).data('url');
         }
     });
@@ -257,6 +272,11 @@ $(document).ready(function() {
 $(document).ready(function() {
     $("#ready").on('click', function() {
         if(confirm("준비가 더 필요하십니까?")) {
+            chatSocket.send(JSON.stringify({
+                'send_type': 'ready_click',
+                'user_name': userName,
+                'room_name': roomName,
+            }));
             location.href = $(this).data('url');
         }
     });
@@ -264,6 +284,11 @@ $(document).ready(function() {
 $(document).ready(function() {
     $("#not_ready2").on('click', function() {
         if(confirm("준비완료?")) {
+            chatSocket.send(JSON.stringify({
+                'send_type': 'ready_click',
+                'user_name': userName,
+                'room_name': roomName,
+            }));
             location.href = $(this).data('url');
         }
     });
@@ -271,6 +296,11 @@ $(document).ready(function() {
 $(document).ready(function() {
     $("#ready2").on('click', function() {
         if(confirm("준비가 더 필요하십니까?")) {
+            chatSocket.send(JSON.stringify({
+                'send_type': 'ready_click',
+                'user_name': userName,
+                'room_name': roomName,
+            }));
             location.href = $(this).data('url');
         }
     });
@@ -307,7 +337,7 @@ $(document).ready(function() {
         }
     });
 });
-
+/*
 var closing_window = false;
 $(window).on('focus', function () {
     closing_window = false;
@@ -374,7 +404,7 @@ $(window).on('focus', function () {
         type: "POST",
         url: "http://127.0.0.1:8000/chat/{{room_name}}/exit/",
         async: false
-	});*/
+	});*//*
     document.querySelector("#start1").click();
 	return;
  };
@@ -388,7 +418,7 @@ window.addEventListener("unload", function (e) {
     event.preventDefault();
     event.returnValue='elkj';
 });
-
+*/
 
         
 </script>

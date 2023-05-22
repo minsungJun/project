@@ -81,7 +81,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # -----------------------게임 시작---------------------------
         elif text_data_json['send_type'] == 'start':
-            print('asefasefasefse')
             userName = text_data_json['user_name']
             roomName = text_data_json['room_name']
 
@@ -217,6 +216,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 }
                             )
                             print('gameover test')
+                            print("여기있는거 실행되나?")
+                            del room[room_name]
+                            del room_turn[room_name]
+                            del user_score[room_name]
                         else:
                             await self.channel_layer.group_send(
                                 self.room_group_name,

@@ -60,3 +60,27 @@ def win_rate(request):
 
     context = {'user_rank_list': page_obj}
     return render(request, 'rank/rank.html', context)
+
+def rating(request):
+    page = request.GET.get('page', '1') #페이지
+
+    #조회
+    user_rank_list = UserRank.objects.order_by('-rating')
+
+    paginator = Paginator(user_rank_list, 20) 
+    page_obj = paginator.get_page(page) 
+
+    context = {'user_rank_list': page_obj}
+    return render(request, 'rank/rank.html', context)
+
+def top_score(request):
+    page = request.GET.get('page', '1') #페이지
+
+    #조회
+    user_rank_list = UserRank.objects.order_by('-top_score')
+
+    paginator = Paginator(user_rank_list, 20) 
+    page_obj = paginator.get_page(page) 
+
+    context = {'user_rank_list': page_obj}
+    return render(request, 'rank/rank.html', context)

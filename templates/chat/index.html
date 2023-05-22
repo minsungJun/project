@@ -2,9 +2,23 @@
 {% extends 'base.html' %}
 {% load chat_filter %}
 {% block content %}
+    <div class="row my-3">
+        <div class="col-6">
+            <a href="{% url 'chat:make_room' %}"><button type="button" class="btn btn-primary">방 생성</button></a>
+            <a href="{% url 'rank:index' %}"><button type="button" class="btn btn-primary">랭킹</button></a><br>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div>
-    <a href="{% url 'chat:make_room' %}"><button type="button" class="btn btn-primary">방 생성</button></a>
-    <a href="{% url 'rank:index' %}"><button type="button" class="btn btn-primary">랭킹</button></a><br>
+    <!--<a href="{% url 'chat:make_room' %}"><button type="button" class="btn btn-primary">방 생성</button></a>
+    <a href="{% url 'rank:index' %}"><button type="button" class="btn btn-primary">랭킹</button></a><br>-->
     What chat room would you like to enter?<br/>
     <input id="room-name-input" type="text" class="form-control" width="50%"/><br/>
     <input id="room-name-submit" type="button" value="Enter"/>

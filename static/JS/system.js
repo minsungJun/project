@@ -100,7 +100,7 @@ function check_winner(dic, name){
     else if(myscore == otherscore){//무
         return 2;
     }
-
+}
 chatSocket.onclose = (e) => {
     console.error('Chat socket closed unexpectedly');
 };

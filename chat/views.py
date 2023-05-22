@@ -245,16 +245,19 @@ def game_over(request, room_name):
 
         if request.POST['is_win_input'] == '0': #win
             player_rank.win_game += 1
+            player_rank.rating += 15
 
         elif request.POST['is_win_input'] == '1': #lose
             player_rank.lose_game += 1
+            player_rank.rating -= 7
 
         else: #3 = draw
-            pass
+            player_rank.rating +=3
 
         #최고점수 갱신
         if int(request.POST["score_input"]) > player_rank.top_score:
             player_rank.top_score = int(request.POST["score_input"])
+            player_rank.rating += 10
         
         player_rank.save()
 
