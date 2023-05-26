@@ -7,13 +7,12 @@ document.querySelector("#test-submit").addEventListener("click", (e) => {
   }));
 });
 
-function dice_clear(){/*
+function dice_clear(){
   lock = [false, false, false, false, false];
   for(let i=0; i<5; i++){
-      document.getElementById('d'+String(i)).textContent = 'D'+String(i+1);
       document.getElementById('d'+String(i)).style.background = 'rgb(255,255,255)';
   }
-  document.getElementById('test-submit').textContent = 'START';*/
+  document.getElementById('test-submit').textContent = 'START';
 }
 
 function number(num){
@@ -80,3 +79,5 @@ function choice(){
       'room_name' : roomName,
   }));
 }
+
+

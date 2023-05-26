@@ -40,12 +40,9 @@ chatSocket.onmessage = (e) => {
         let user_number = data['user_number'];
         let used_score = data['used_score'];
         //console.log(used_score);
-        for(let i=0; i<5; i++){
-            document.getElementById('d'+String(i)).textContent = dice_value[i];
-        }
         dice_roll(dice_value);
-        //dice_roll_test2();
         preview_score(dice_value, user_number, used_score);
+        dice_sound.play();
         document.getElementById('test-submit').textContent = 'Re Roll (' + roll_cnt + '/ 3)';
     }
 
@@ -56,8 +53,16 @@ chatSocket.onmessage = (e) => {
         let game_over = data['game_over'];
         let user_score = data['user_score'];
         dice_clear();
-        //게임 오버
-        if(game_over==true){
+        for(let i=0; i<15; i++){
+            document.getElementById('p'+String(user_number)+String(i)).textContent = dice_value[i];
+        }
+        let other_user_number = user_number == 1 ? 2 : 1
+        document.getElementById(String(user_number) + 'p_name').style.backgroundColor = 'white';
+        document.getElementById(String(other_user_number) + 'p_name').style.backgroundColor = 'rgb(181,230,29)';
+
+
+        pen_sound.play();
+        if(game_over==true){//게임오버 판별
             console.log("gameover test333");
             let is_win = check_winner(user_score, userName)
             document.querySelector("#chat-log").value += ("!!GAME OVER!!");
@@ -74,15 +79,16 @@ chatSocket.onmessage = (e) => {
             document.getElementById("score_input").value = user_score[userName];
             document.getElementById("decide_winner").submit();
         }
-        for(let i=0; i<15; i++){
-            document.getElementById('p'+String(user_number)+String(i)).textContent = dice_value[i];
-        }
-        
     }
 
-
-
-
+    else if(data['send_type'] == 'print_user_name'){
+        const user_name_dic = data['user_name_arr'];
+        let user_name = Object.keys(user_name_dic); 
+        console.log(user_name);
+        document.getElementById("1p_name").textContent = user_name[0];
+        document.getElementById("2p_name").textContent = user_name[1];
+        document.getElementById("1p_name").style.backgroundColor = 'rgb(181,230,29)';
+    }
 
 };
 
