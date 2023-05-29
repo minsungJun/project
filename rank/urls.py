@@ -11,4 +11,5 @@ urlpatterns = [
     path('win_rate/', views.win_rate, name='win_rate'),
     path('rating/', views.rating, name='rating'),
     path('top_score/', views.top_score, name='top_score'),
+    path('<str:user>/', views.user_status, name='user_status'),
 ]

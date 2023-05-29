@@ -9,7 +9,7 @@
         </div>
         <div class="col-6">
             <div class="input-group">
-                <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}">
+                <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}" placeholder='방 이름 및 방장으로 검색' >
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
                 </div>
@@ -28,8 +28,9 @@
         <table class="table">
             <thead>
             <tr class="thead-dark">
-                <th>번호</th>
                 <th>방제</th>
+                <th>인원</th>
+                <th>상태</th>
                 <!-- 이후 방 생성자, 방 주소, 방 현제 인원수, 관전자 수 등 추가-->
                 
             </tr>   
@@ -37,19 +38,26 @@
             <tbody>
             {% if game_room_list %}
             {% for game_room in game_room_list %}
+            {% if game_room.is_start == False %}
             <tr>
-                <td>{{ game_room_list.paginator.count|sub:game_room_list.start_index|sub:forloop.counter0|add:1 }}</td>
+            {% else %}
+            <tr class="table-primary">
+            {% endif %}
                 <td>
                     <a href="{% url 'chat:waiting_room' game_room.room_url %}">
                         {{ game_room.room_name }}
                     </a>
-                    {% if game_room.people_num > 0 %}
-                    <span class="text-danger small ml-2">
-                        {{ game_room.people_num.count }}
-                    </span>
+                </td>
+                <td>
+                    {{ game_room.people_num }}/2
+                </td>
+                <td>
+                    {% if game_room.is_start == False %}
+                    대기중
+                    {% else %}
+                    게임중
                     {% endif %}
                 </td>
-                <!--<td>{{ question.create_date }}</td>-->
             </tr>
             {% endfor %}
             {% else %}
@@ -64,7 +72,7 @@
             <!-- 이전 페이지 -->
             {% if game_room_list.has_previous %}
             <li class="page-item">
-                <a href="?page={{ game_room_list.previous_page_number }}" class="page-link">
+                <a class="page-link" data-page="{{ question_list.previous_page_number }}" href="javascript:void(0)">
                     이전
                 </a>
             </li>
@@ -86,7 +94,7 @@
                 </li>
                 {% else %}
                 <li class="page-item">
-                    <a href="?page={{ page_number }}" class="page-link">
+                    <a class="page-link" data-page="{{ page_number }}" href="javascript:void(0)">
                         {{ page_number }}
                     </a>
                 </li>
@@ -96,7 +104,7 @@
             <!-- 다음 페이지 -->
             {% if game_room_list.has_next %}
             <li class="page-item">
-                <a href="?page={{ gmae_room_list.next_page_number}}" class="page-link">
+                <a class="page-link" data-page="{{ question_list.next_page_number }}" href="javascript:void(0)">
                     다음
                 </a>
             </li>
@@ -113,18 +121,31 @@
             방 생성
         </a>
     </div>
-
-    <script>
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
-
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
-        };
-    </script>
+    <form id="searchForm" method="get" action="{% url 'chat:index' %}">
+        <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+        <input type="hidden" id="page" name="page" value="{{ page }}">
+    </form>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+    const page_elements = document.getElementsByClassName("page-link");
+    Array.from(page_elements).forEach(function(element) {
+        element.addEventListener('click', function() {
+            document.getElementById('page').value = this.dataset.page;
+            document.getElementById('searchForm').submit();
+        });
+    });
+    const btn_search = document.getElementById("btn_search");
+    btn_search.addEventListener('click', function() {
+        document.getElementById('kw').value = document.getElementById('search_kw').value;
+        document.getElementById('page').value = 1;  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
+        document.getElementById('searchForm').submit();
+    });
+    document.querySelector('#search_kw').focus();
+    document.querySelector('#search_kw').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#btn_search').click();
+        }
+    };
+</script>
 {% endblock %}

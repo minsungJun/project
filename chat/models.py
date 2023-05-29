@@ -13,6 +13,7 @@ class GameRoom(models.Model):
     host = models.CharField(max_length=50)
     people_num = models.IntegerField(default=0) #player_num
     #people_watch_num = models.IntegerField(default=0) #관전자수
+    is_start = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.room_name

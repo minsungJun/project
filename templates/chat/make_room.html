@@ -31,3 +31,18 @@
     </form>
 </div>
 {% endblock %}
+{% block script %}
+<script>
+    let roomName = "{{ game_room.room_name | escapejs }}"; //room_name으로 전달 받은 방번호를 roomName에 저장
+    let roomUrl = "{{ game_room.room_url | escapejs }}";
+    let userName = "{{ user.username | escapejs }}"; //user_name으로 전달 받은 유저이름을 userName에 저장
+
+
+    window.onload=function(){
+        if( "{{is_error}}" ){
+            alert(userName+"님은 "+ roomName +"에 참가중입니다.\n해당 방으로 이동 합니다.")
+            window.location.pathname = "chat/waiting_room/"+roomUrl+"/";
+        }
+    }
+</script>
+{% endblock %}

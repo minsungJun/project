@@ -14,19 +14,35 @@ from rank.models import UserRank
 
 #메인화면
 def index(request):
+    '''메인 화면'''
     '''Game_room 목록 출력'''
+
+    #메인 화면 접속 시에 사용자가 특정 게임 룸에 입장 상태라면 강제퇴장 처리
+    if request.user.is_authenticated == True:
+        player = User.objects.get(username = request.user.username)
+        if GameAttend.objects.filter(user = player).exists() == True:
+            game_room = GameAttend.objects.get(user = player).gameroom
+            return redirect('chat:exit_room', room_name=game_room.room_url)
 
     #입력 인자, GET방식 요청 url에서 page값을 가져올때 사용(즉, 최초 페이지를 물러올때 보여줄 페이지를 설정하는 것)
     page = request.GET.get('page', '1') #페이지
+    kw = request.GET.get('kw', '')  # 검색어
 
     #조회
-    game_room_list = GameRoom.objects.order_by('-id')
+    game_room_list = GameRoom.objects.order_by('is_start', '-id') #and GameRoom.objects.order_by('-id')
 
+    if kw:
+        game_room_list = (
+            game_room_list.filter(room_name__icontains=kw) | 
+            game_room_list.filter(host__icontains=kw) 
+        ).distinct()
+    
     #페이징 처리, 페이징 구현에 사용되는 실질적인 클래스(Paginator클래스)
-    paginator = Paginator(game_room_list, 10) # 페이지당 10개씩 보여 주기, question_list를 페이지 객체 paginator로 변환
+    paginator = Paginator(game_room_list, 20) # 페이지당 10개씩 보여 주기, question_list를 페이지 객체 paginator로 변환
     page_obj = paginator.get_page(page) # 페이징 구현에 사용한 Paginator클래스, 기본적으로 다양한 속성을 가짐 P.133
+    print('여기는 실행?')
 
-    context = {'game_room_list': page_obj}
+    context = {'game_room_list': page_obj, 'page': page, 'kw': kw}
     return render(request, 'chat/index.html', context)
 
 
@@ -53,9 +69,23 @@ def make_room(request):
             GameAttend(gameroom=game_room, user=player).save()
             #chat라는 앱의 room이라는 이름의 url실행
             return redirect('chat:waiting_room', room_name = game_room.room_url) #방생성시 db에 저장하고 대기실로 입장
-        else:
-            print('현재 다름 게임룸에 참가중')#이를 오류페이지로 만들어서 제공
-            return render(request, 'chat/1.html')
+        #방 생성시 form이 유효하지만 참가자 db에 유저가 존재할시 참가중인 방으로 이동하도록 make_room호출
+        else: #if form.is_valid() and GameAttend.objects.filter(user=player).exists():
+            print(request.method)
+            print(request.POST)
+            game_room = GameAttend.objects.get(user=player).gameroom
+            game_room_name = game_room.room_name
+            game_room_url = game_room.room_url
+            #is_error = "true"
+            user_name = player.username
+
+            return render(request, 'chat/make_room.html', {
+                "game_room" : game_room,
+                "user" : player,
+                "is_error" : True,
+            })
+            #print('현재 다름 게임룸에 참가중')#이를 오류페이지로 만들어서 제공
+            #return render(request, 'chat/1.html')
     else:
         form = RoomForm()
     context = {'form': form}
@@ -88,29 +118,6 @@ def waiting_room(request, room_name):
     #로그인 여부 확인
     if request.user.is_authenticated == False:
         return redirect('common:login')
-    '''#print(request.POST.get())
-    #print(request.GET.get())
-    game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
-    player = User.objects.get(username= request.user.username) #입장하는 유저의db
-
-    print(request.method)
-
-    #입력방식이 POST라면 메인화면으로
-    if request.method == "POST":
-        print(request.POST)
-        print(request.POST.get('exit'))
-        print(request.POST.get('exit2'))
-        game_attend = GameAttend.objects.get(user=player)
-        game_attend.delete()
-        game_room.people_num = game_room.people_num - 1
-        if game_room.people_num == 0:
-            game_room.delete()
-        
-        #print(request.GET.get())
-        if request.POST.get('exit2'):
-            return redirect('chat:index')'''
-    if request.method == "POST":
-        return redirect('chat:exit_room',room_name=room_name)
     
     game_room = GameRoom.objects.get(room_url = room_name) #입장할 게임룸의 db
     player = User.objects.get(username= request.user.username) #입장하는 유저의db
@@ -118,7 +125,7 @@ def waiting_room(request, room_name):
     print(game_room.people_num)
     #게임의 플레이어로 GameAttend에 저장하고
     #대기실에 들어가도록 한다.
-    #유저의 이름이 GameAttend에 저장되어 있지 않고 참s가자의 수가 2미만이면 db생성
+    #유저의 이름이 GameAttend에 저장되어 있지 않고 참가자의 수가 2미만이면 db생성
     #게임 참가자가 아나면서 참가자 수가 2미만이면 게임참가 db에 이름 저장
     if game_room.people_num < 2 and not GameAttend.objects.filter(user=player).exists():
         game_attend = GameAttend(gameroom=game_room, user=player)
@@ -126,36 +133,19 @@ def waiting_room(request, room_name):
         game_room.people_num += 1
         game_room.save()
     #게임 참가자db에 게임 참가자가 2이상이고 로그인 유저가 참가자 db에 이름이 없으면 관전자로 빼냄
-    elif game_room.people_num >= 2 and not GameAttend.objects.filter(user=player).exists():
+    #일단 관전자 제외
+    """elif game_room.people_num >= 2 and not GameAttend.objects.filter(user=player).exists():
         game_watch = GameWatch(gameroom=game_room, user=player)
-        game_watch.save()
-        
-        
-    """if (game_room.people_num < 2)and(not(GameAttend.objects.get(user__exist=player))):
-            game_attend = GameAttend(gameroom=game_room, user=player)
-            game_attend.save()
-            game_room.people_num += 1
-            game_room.save()"""
-    """try:
-        if (game_room.people_num < 2)and(not(player.users)):
-            game_attend = GameAttend(gameroom=game_room, user=player)
-            game_attend.save()
-            game_room.people_num += 1
-            game_room.save()
-    except:
-        game_attend = GameAttend(gameroom=game_room, user=player)
-        game_attend.save()
-        game_room.people_num += 1
-        game_room.save()"""
+        game_watch.save()"""
     
-    game_attend = GameAttend.objects.filter(gameroom=game_room)
+    game_attend = GameAttend.objects.filter(gameroom=game_room) #게임 룸에 참자 중인 모든 참가자 객체 추출
     print(game_attend)
-    attender_count = game_attend.count()
+    attender_count = game_attend.count() #게임 참가자 수
     ready_count = 0
-    if game_attend.count() == 2:
+    if game_attend.count() == 2: #참가자의 수가 2이라면
         for attender in game_attend:
             if attender.user_ready == True:
-                ready_count = ready_count + 1
+                ready_count = ready_count + 1 #참가자들 중에서 ready중인 참가자 수를 셈
         
     #대기실 입장
     return render(request, 'chat/waiting_room.html', {
@@ -164,8 +154,8 @@ def waiting_room(request, room_name):
         'user': player,
         'attender_count': attender_count,
         'ready_count': ready_count,
-        'game_room': game_room,
-        'game_attend': game_attend
+        'game_room': game_room, #게임룸 db
+        'game_attend': game_attend #게임 참가자 중인 모든 참가자 db
     })
 
 def exit_room(request, room_name):
@@ -225,6 +215,8 @@ def game_start(request, room_name):
                 ready_count = ready_count + 1
     
     if game_attend.count() == 2 and ready_count == 2:
+        game_room.is_start = True
+        game_room.save()
         return redirect('chat:room', room_name)
     else:
         return redirect('chat:waiting_room', room_name)
@@ -246,10 +238,14 @@ def game_over(request, room_name):
         if request.POST['is_win_input'] == '0': #win
             player_rank.win_game += 1
             player_rank.rating += 15
+            player_rank.is_winning_streak += 1
+            if player_rank.is_winning_streak > player_rank.top_winning_streak:
+                player_rank.top_winning_streak = player_rank.is_winning_streak
 
         elif request.POST['is_win_input'] == '1': #lose
             player_rank.lose_game += 1
             player_rank.rating -= 7
+            player_rank.is_winning_streak = 0
 
         else: #3 = draw
             player_rank.rating +=3
@@ -263,5 +259,8 @@ def game_over(request, room_name):
 
     game_attend.user_ready = False
     game_attend.save()
+
+    game_attend.gameroom.is_start = False
+    game_attend.gameroom.save()
 
     return redirect("chat:waiting_room", room_name)

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load rank_filter %}
+{% block content %}
+    <div class="container my-3">
+        <table class="table">
+            <thead>
+                <tr class="thead-dark">
+                    <th class="col-3"></th>
+                    <th class="col-4">유저</th>
+                    <td class=>{{user.username}}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="col-3"></th>
+                    <th>총 플레이 게임</th>
+                    <td>{{user.user_rank.total_game}}</td>
+                </tr>
+                <tr>
+                    <th class="col-3"></th>
+                    <th>이긴 게임</th>
+                    <td>{{user.user_rank.win_game}}</td>
+                </tr>
+                <tr>
+                    <th class="col-3"></th>
+                    <th>진 게임</th>
+                    <td>{{user.user_rank.lose_game}}</td>
+                </tr>
+                <tr>
+                    <th class="col-3"></th>
+                    <th>비긴 게임</th>
+                    <td>{{user.user_rank.total_game|sub:user.user_rank.win_game|sub:user.user_rank.lose_game}}</td>
+                </tr>
+                <tr>
+                    <th class="col-3"></th>
+                    <th>최대 점수</th>
+                    <td>{{user.user_rank.top_score}}</td>
+                </tr>
+                <tr>
+                    <th class="col-3"></th>
+                    <th>최대 연승</th>
+                    <td>{{ user.user_rank.top_winning_streak }}</td>
+                </tr>
+                <tr>
+                    <th class="col-3"></th>
+                    <th>승률</th>
+                    <td>{{ user.user_rank.win_game|win_rate:user.user_rank.total_game }}%</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row my-3">
+            <div class="col-sm">
+                <a href="{% url 'chat:index' %}" class="btn btn-primary">메인 화면</a>
+                <a href="{% url 'chat:make_room' %}" class="btn btn-primary">방 생성</a>
+                <a href="{% url 'rank:index' %}" class="btn btn-primary">랭킹</a>
+            </div>
+        </div>
+        <div class="row my-3    ">
+            <div class="col-sm">
+                <div class="input-group">
+                    <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}" placeholder='유저 검색'>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="searchForm" method="get" action="{% url 'rank:user_status' user %}">
+        <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+        
+    </form>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+const btn_search = document.getElementById("btn_search");
+btn_search.addEventListener('click', function() {
+    document.getElementById('kw').value = document.getElementById('search_kw').value;
+    document.getElementById('searchForm').submit();
+});
+document.querySelector('#search_kw').focus();
+document.querySelector('#search_kw').onkeyup = function(e) {
+    if (e.keyCode === 13) {  // enter, return
+        document.querySelector('#btn_search').click();
+    }
+}; 
+</script>
+{% endblock %}
