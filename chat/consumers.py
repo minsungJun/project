@@ -68,8 +68,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     
                     #room[roomName][userName] = len(room[roomName])
                     print(room.get(roomName))
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'print_user_name',
+                            'user_name': room[roomName],
+                        }
+                    )
                 else:
-                    print("error")
+                    print("consumers enter error")
         #------------------------유저가 방에서 퇴장------------------------
         elif text_data_json['send_type'] == 'close':
             print('close')
@@ -144,18 +151,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if room_turn[room_name]['room_turn'] < 26:
                 if room_turn[room_name]['room_turn'] % 2 == get_room_user[user_name]:
                     self.sys.dice_lock = text_data_json['lock_data']
-                    self.sys.roll()
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'dice_roll',
-                            'dice': self.sys.dice,
-                            'roll_cnt': self.sys.roll_cnt,
-                            'user_number': room_user_number + 1,
-                            'used_score': self.sys.used_score,
-                        }
-                    )
-                print('im working!!')
+                    if self.sys.roll() == True :
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                'type': 'dice_roll',
+                                'dice': self.sys.dice,
+                                'roll_cnt': self.sys.roll_cnt,
+                                'user_number': room_user_number + 1,
+                                'used_score': self.sys.used_score,
+                            }
+                        )
+                        print('im working!!')
 
         else:
             # 족보 판별
@@ -204,7 +211,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         print(user_score)
                         room_user_number = get_room_user.get(user_name)
                         #게임오버 판별  원래 26
-                        if room_turn[room_name]['room_turn'] >= 2:
+                        if room_turn[room_name]['room_turn'] >= 26:
                             await self.channel_layer.group_send(
                                 self.room_group_name,
                                 {
@@ -262,6 +269,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'send_type': 'start',
             'user_name': userName,
+        }))
+
+    # 방에 유저 이름들 출력
+    # 'user_name': room[roomName],
+    async def print_user_name(self, event):
+        user_name_arr = event['user_name']
+        await self.send(text_data=json.dumps({
+            'send_type': 'print_user_name',
+            'user_name_arr': user_name_arr,
         }))
 
     # -------------------게임 기능 전달-------------------------

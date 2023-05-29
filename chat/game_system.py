@@ -32,11 +32,12 @@ class System:
     '''
 
     def roll(self):
-        if self.roll_cnt < 100:
+        if self.roll_cnt < 3:
             for i in range(5):
                 if not self.dice_lock[i]:
                     self.dice[i] = randint(1, 6)
             self.roll_cnt += 1
+            return True
 
     def number(self, num):
         if self.used_score[num - 1] != True:
