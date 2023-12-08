@@ -13,7 +13,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     sys = None
 
-
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
@@ -129,6 +128,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'game_start',
                     'user_name': userName,
+                    # 'present_time': presentTime
+                }
+            )
+
+        # -----------------------유저 준비---------------------------
+        elif text_data_json['send_type'] == 'ready_click':
+            user_name = text_data_json['user_name']
+            
+            # "room" 그룹에 메시지 전송
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'ready_click',
+                    'user_name': user_name,
                     # 'present_time': presentTime
                 }
             )
@@ -319,3 +332,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'user_number': room_user_number,
                 'game_over' : False,
             }))
+    # ------------------게임 시작 신호 전달------------------------
+    # "room" 그룹에서 게임 시작 정보 수신
+    async def game_start(self, event):
+        userName = event['user_name']
+        await self.send(text_data=json.dumps({
+            'send_type': 'start',
+            'user_name': userName,
+        }))
+    
+    # ------------------유저 입장 신호 전달------------------------
+    # "room" 그룹에서 유저 입장 신호 수신
+    async def user_enter(self, event):
+        userName = event['user_name']
+        await self.send(text_data=json.dumps({
+            'send_type': 'user_enter',
+            'user_name': userName,
+        }))
+    
+    # ------------------유저 준비 신호 전달------------------------
+    # "room" 그룹에서 유저 준비 신호 수신
+    async def ready_click(self, event):
+        userName = event['user_name']
+        await self.send(text_data=json.dumps({
+            'send_type': 'ready_click',
+            'user_name': userName,
+        }))

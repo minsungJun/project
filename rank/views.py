@@ -63,12 +63,9 @@ def win_rate(request):
     page = request.GET.get('page', '1') #페이지
 
     #임의의 속성을 만들어 조회
-    user_rank_list = UserRank.objects.annotate(
-    win_rate=ExpressionWrapper(
-        F('win_game') / F('total_game')*100, 
-        output_field=FloatField()
-    )
-    ).order_by('win_rate')
+    user_rank_list = UserRank.objects.exclude(total_game=0).annotate(
+        combined_field=F('win_game') * 100 / F('total_game'),
+    ).order_by('-combined_field', '-total_game')
 
     paginator = Paginator(user_rank_list, 20) 
     page_obj = paginator.get_page(page) 
